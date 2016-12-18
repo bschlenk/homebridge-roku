@@ -1,6 +1,6 @@
 {
   "name": "homebridge-roku",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "Control Roku media players through homebridge",
   "main": "index.js",
   "scripts": {
@@ -26,6 +26,10 @@
     "mocha": "^3.2.0"
   },
   "dependencies": {
-    "nodeku": "^1.0.5"
+    "nodeku": "^1.0.7"
+  },
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
   }
 }
