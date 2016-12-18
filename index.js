@@ -82,6 +82,7 @@ class RokuAccessory {
           })
           .then(() => callback(null))
           .catch(callback);
+      });
 
     volume
       .addCharacteristic(Characteristic.Volume)
