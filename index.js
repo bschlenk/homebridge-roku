@@ -38,15 +38,15 @@ class RokuAccessory {
   }
 
   setupAccessoryInfo() {
-    const accessoryInfo = new Service.AccessoryInformation(this.name);
+    const accessoryInfo = new Service.AccessoryInformation();
 
     accessoryInfo
-      .setCharacteristic(Characteristic.Manufacturer, rokuInfo.manufacturer)
-      .setCharacteristic(Characteristic.Model, rokuInfo.modelName)
-      .setCharacteristic(Characteristic.Name, rokuInfo.friendlyName)
-      .setCharacteristic(Characteristic.SerialNumber, rokuInfo.serialNumber);
+      .setCharacteristic(Characteristic.Manufacturer, this.info.manufacturer)
+      .setCharacteristic(Characteristic.Model, this.info.modelName)
+      .setCharacteristic(Characteristic.Name, this.info.friendlyName)
+      .setCharacteristic(Characteristic.SerialNumber, this.info.serialNumber);
 
-    accessoryInfo;
+    return accessoryInfo;
   }
 
   setupSwitch() {
