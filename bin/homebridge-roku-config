@@ -2,24 +2,15 @@
 
 const discover = require('nodeku')
 
-let ip;
-let info;
-let appMap = {};
-
 discover().then(device => {
-  ip = device.ip();
-  return device.apps().then(apps => {
-    return apps.forEach(app => {
-      appMap[app.get('name')] = app.get('id');
-    });
-  })
-  .then(() => {
-    return device.info().then(dinfo => {
-      info = dinfo.toJS();
-    });
-  });
+  const ip = device.ip();
+  const appMap = {};
+  return device.apps().then(apps =>
+    apps.forEach(app => appMap[app.name] = app.id))
+  .then(() => device.info())
+  .then(info => ({ ip, appMap, info }))
 })
-.then(() => {
+.then(({ ip, appMap, info }) => {
   const config = {
     accessories: [
       {
