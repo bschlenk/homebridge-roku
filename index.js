@@ -19,6 +19,7 @@ class RokuAccessory {
     if (!config.ip) {
       throw new Error(`An ip address is required for plugin ${this.name}`);
     }
+
     this.appMap = config.appMap;
     this.info = config.info;
     this.roku = new Roku(config.ip);
@@ -41,10 +42,10 @@ class RokuAccessory {
     const accessoryInfo = new Service.AccessoryInformation();
 
     accessoryInfo
-      .setCharacteristic(Characteristic.Manufacturer, this.info.manufacturer)
-      .setCharacteristic(Characteristic.Model, this.info.modelName)
-      .setCharacteristic(Characteristic.Name, this.info.friendlyName)
-      .setCharacteristic(Characteristic.SerialNumber, this.info.serialNumber);
+      .setCharacteristic(Characteristic.Manufacturer, this.info['vendor-name'])
+      .setCharacteristic(Characteristic.Model, this.info['model-name'])
+      .setCharacteristic(Characteristic.Name, this.info['user-device-name'])
+      .setCharacteristic(Characteristic.SerialNumber, this.info['serial-number']);
 
     return accessoryInfo;
   }
