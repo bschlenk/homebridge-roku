@@ -4,7 +4,10 @@
   "description": "Control Roku media players through homebridge",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "coverage": "jest --coverage",
+    "start": "./scripts/setup.js && DEBUG=* homebridge -D -U . -P ."
   },
   "repository": {
     "type": "git",
@@ -26,6 +29,7 @@
     "mocha": "^3.2.0"
   },
   "dependencies": {
+    "deepmerge": "^2.0.0",
     "nodeku": "^1.0.14"
   },
   "engines": {

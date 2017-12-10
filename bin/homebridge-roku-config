@@ -1,48 +1,18 @@
 #!/usr/bin/env node
 
-const discover = require('nodeku')
-const fs = require('fs');
-const path = require('path');
+const { generateConfig, mergeConfigWithMaster, HOMEBRIDGE_CONFIG } = require('../src/setup');
 
-const HOMEBRIDGE_CONFIG = path.join(process.env.HOME, '.homebridge', 'config.json');
+const args = process.argv.slice(2);
+const shouldMerge = args[0] === '--merge';
 
-discover().then(device => {
-  const ip = device.ip();
-  const appMap = {};
-  return device.apps().then(apps =>
-    apps.forEach(app => appMap[app.name] = app.id))
-  .then(() => device.info())
-  .then(info => ({ ip, appMap, info }))
-})
-.then(({ ip, appMap, info }) => {
-  const config = {
-    accessories: [
-      {
-        accessory: "Roku",
-        name: "Roku",
-        ip,
-        appMap,
-        info,
-      },
-    ],
-  };
-
-  const args = process.argv.slice(2);
-  if (args[0] === '--merge') {
-    mergeConfig(config);
-    console.log(`Added roku accessory configuration to ${HOMEBRIDGE_CONFIG}`);
-  } else {
-    console.log(JSON.stringify(config, null, 4));
-  }
-})
-.catch(err => {
-  console.error(err.stack)
-});
-
-function mergeConfig(toMerge) {
-  const config = JSON.parse(fs.readFileSync(HOMEBRIDGE_CONFIG));
-  const { accessories = [] } = config;
-  accessories.push(...toMerge.accessories);
-  config.accessories = accessories;
-  fs.writeFileSync(JSON.stringify(config, null, 4));
-}
+generateConfig()
+  .then((config) => {
+    if (shouldMerge) {
+      mergeConfigWithMaster(config);
+      console.log(`Added roku accessory configuration to ${HOMEBRIDGE_CONFIG}`);
+    } else {
+      console.log(JSON.stringify(config, null, 4));
+    }
+  }).catch(err => {
+    console.error(err.stack)
+  });
