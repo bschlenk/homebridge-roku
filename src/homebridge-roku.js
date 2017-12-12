@@ -1,6 +1,6 @@
-const { Client } = require('roku-client');
+const { Client, keys } = require('roku-client');
 
-let Service, Characteristic, roku, rokuInfo;
+let Service, Characteristic;
 
 module.exports = homebridge => {
   console.log(`homebridge API version: ${homebridge.version}`);
@@ -35,7 +35,10 @@ class RokuAccessory {
   setup() {
     this.services.push(this.setupAccessoryInfo());
     this.services.push(this.setupSwitch());
-    this.services.push(this.setupVolume());
+    this.services.push(this.setupMute());
+    this.services.push(this.setupVolumeUp());
+    this.services.push(this.setupVolumeDown());
+    this.services.push(...this.setupChannels());
   }
 
   setupAccessoryInfo() {
@@ -51,7 +54,7 @@ class RokuAccessory {
   }
 
   setupSwitch() {
-    const switch_ = new Service.Switch(this.name);
+    const switch_ = new Service.Switch(`${this.name}Power`, 'Power');
 
     switch_
       .getCharacteristic(Characteristic.On)
@@ -66,53 +69,83 @@ class RokuAccessory {
     return switch_;
   }
 
-  setupVolume() {
-    const volume = new Service.Speaker(this.name);
+  setupMute() {
+    // Speaker seems to be unsupported, emmulating with a switch
+    const volume = new Service.Switch(`${this.name}Mute`, 'Mute');
 
     volume
-      .getCharacteristic(Characteristic.Mute)
-      .on('get', callabck => callback(null, this.muted))
+      .getCharacteristic(Characteristic.On)
+      .on('get', callback => callback(null, this.muted))
       .on('set', (value, callback) => {
         this.muted = value;
-        this.roku.keypress('VolumeDown')
-          .then(() => this.roku.keypress('VolumeUp'))
+        this.roku.keypress(keys.VOLUME_DOWN)
+          .then(() => this.roku.keypress(keys.VOLUME_UP))
           .then(() => {
             if (this.muted) {
-              return this.roku.keypress('VolumeMute');
+              return this.roku.keypress(keys.VOLUME_MUTE);
             }
           })
           .then(() => callback(null))
           .catch(callback);
       });
 
+    return volume;
+  }
+
+  setupVolumeUp() {
+    return this.setupVolume(keys.VOLUME_UP);
+  }
+
+  setupVolumeDown() {
+    return this.setupVolume(keys.VOLUME_DOWN);
+  }
+
+  setupVolume(key) {
+    const volume = new Service.Switch(`${this.name}${key}`, key);
+
     volume
-      .addCharacteristic(Characteristic.Volume)
-      .on('get', callback => callback(null, this.volumeLevel))
+      .getCharacteristic(Characteristic.On)
+      .on('get', callback => callback(null, false))
       .on('set', (value, callback) => {
-        this.log('requested volume level %d, current level %d',
-          volume, this.volumeLevel);
-        let change = value - this.volumeLevel;
-        this.volumeLevel = value;
-        if (change === 0) {
-          return;
-        }
-        let button = 'VolumeUp';
-        if (change < 0) {
-          button = 'VolumeDown';
-        }
-        change = Math.abs(change);
-
-        this.log('sending %s %d times', button, change);
-
         let promise = Promise.resolve();
-        for (let i = 0; i < change; ++i) {
-          promise = promise.then(() => this.roku.keypress(button));
+        for (let i = 0; i < 10; ++i) {
+          promise = promise.then(this.roku.keypress(key));
         }
-        promise.then(() => callback(null))
+        promise
+          .then(() => callback(null, false))
           .catch(callback);
       });
 
     return volume;
+  }
+
+  setupChannels() {
+    return Object.entries(this.appMap)
+      .map(([name, id]) => this.setupChannel(name, id));
+  }
+
+  setupChannel(name, id) {
+    const channel = new Service.Switch(`${this.name}${name}`, name);
+
+    channel
+      .getCharacteristic(Characteristic.On)
+      .on('get', callback => {
+        this.roku.active().then(app => {
+          callback(null, app && app.id === id);
+        }).catch(callback);
+      })
+      .on('set', (value, callback) => {
+        if (value) {
+          this.roku.launch(id)
+            .then(() => callback(null, true))
+            .catch(err => callback(err));
+        } else {
+          // TODO: return to home screen
+          callback(null, false);
+        }
+      })
+
+    return channel;
   }
 
   getServices() {
