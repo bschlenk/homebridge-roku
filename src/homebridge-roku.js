@@ -1,4 +1,4 @@
-const Roku = require('nodeku/lib/device');
+const { Client } = require('roku-client');
 
 let Service, Characteristic, roku, rokuInfo;
 
@@ -22,7 +22,7 @@ class RokuAccessory {
 
     this.appMap = config.appMap;
     this.info = config.info;
-    this.roku = new Roku(config.ip);
+    this.roku = new Client(config.ip);
     this.services = [];
 
     this.muted = false;

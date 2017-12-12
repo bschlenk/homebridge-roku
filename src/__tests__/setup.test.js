@@ -1,16 +1,14 @@
 const { generateConfig, mergeConfigWithMaster, HOMEBRIDGE_CONFIG } = require('../setup');
 
-jest.mock('nodeku');
+jest.mock('roku-client');
 jest.mock('fs');
 
 const IP = '192.168.1.1';
 
 describe('setup', () => {
-
   describe('#generateConfig()', () => {
-
     beforeEach(() => {
-      require('nodeku').__setDevice(
+      require('roku-client').__setClient(
         IP,
         [
           { name: 'Netflix', id: '1234' },
@@ -23,7 +21,7 @@ describe('setup', () => {
     });
 
     it('should return the generated config', () => {
-      generateConfig().then((config) => {
+      return generateConfig().then((config) => {
         expect(config).toBeDefined();
         const { accessories } = config;
         expect(accessories).toBeInstanceOf(Array);
@@ -42,7 +40,6 @@ describe('setup', () => {
   });
 
   describe('#mergeConfigWithMaster()', () => {
-
     beforeEach(() => {
       require('fs').__setReadFile(JSON.stringify({
         bridge: {

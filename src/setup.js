@@ -1,4 +1,4 @@
-const discover = require('nodeku')
+const { Client } = require('roku-client');
 const fs = require('fs');
 const path = require('path');
 const deepmerge = require('deepmerge');
@@ -11,8 +11,8 @@ const HOMEBRIDGE_CONFIG = path.join(process.env.HOME, '.homebridge', 'config.jso
  * @return {Promise<Object>}
  */
 function generateConfig() {
-  return discover().then(device => {
-    const ip = device.ip();
+  return Client.discover().then(device => {
+    const ip = device.ip;
     const appMap = {};
     return device.apps().then(apps =>
       apps.forEach(app => appMap[app.name] = app.id))

@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "deepmerge": "^2.0.0",
-    "nodeku": "^1.0.14"
+    "roku-client": "^1.0.16"
   },
   "engines": {
     "node": ">=0.12.0",
