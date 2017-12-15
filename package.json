@@ -7,7 +7,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "coverage": "jest --coverage",
-    "start": "./scripts/setup.js && DEBUG=* homebridge -D -U . -P ."
+    "start": "./scripts/setup.js && DEBUG=* homebridge -D -U . -P .",
+    "publish": "npm run test && npm publish"
   },
   "repository": {
     "type": "git",
