@@ -6,13 +6,13 @@ Control your Roku media player from your iOS devices using apple's HomeKit. See 
 
 1. Install globally by running `npm install -g homebridge-roku`
 2. Ensure Roku device is turned on
-3. Update config file with Roku info by running `./bin/homebridge-roku-config --merge`
+3. Update config file with Roku info by running `homebridge-roku-config --merge`
 
 ### Additional Installation Info
 
 A config file must exist at `~/.homebridge/config.json`. See the [sample config file](https://github.com/nfarina/homebridge/blob/master/config-sample.json) for an example.
 
-You can run `./bin/homebridge-roku-config` by itself to print out the homebride-roku config and manually add it to `~/.homebridge/config.json` if you prefer.
+You can run `homebridge-roku-config` by itself to print out the homebride-roku config and manually add it to `~/.homebridge/config.json` if you prefer.
 
 Any time you install a new app, repeat step 3 to update the config file with the app's info. You can also remove apps from the generated config if you don't want to be able to launch them with Siri.
 
