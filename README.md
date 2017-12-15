@@ -1,5 +1,7 @@
 # homebridge-roku
 
+[![npm version](https://badge.fury.io/js/homebridge-roku.svg)](https://badge.fury.io/js/homebridge-roku)
+
 Control your Roku media player from your iOS devices using apple's HomeKit. See [homebridge](https://github.com/nfarina/homebridge) for more information controlling 3rd party devices through HomeKit.
 
 ## Installation
