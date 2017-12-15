@@ -1,20 +1,12 @@
 const { Client, keys } = require('roku-client');
 
-let Service, Characteristic;
-
-module.exports = homebridge => {
-  console.log(`homebridge API version: ${homebridge.version}`);
-
-  Service = homebridge.hap.Service;
-  Characteristic = homebridge.hap.Characteristic;
-
-  homebridge.registerAccessory("homebridge-roku", "Roku", RokuAccessory);
-};
+let Service;
+let Characteristic;
 
 class RokuAccessory {
   constructor(log, config) {
     this.log = log;
-    this.name = config['name'];
+    this.name = config.name;
 
     if (!config.ip) {
       throw new Error(`An ip address is required for plugin ${this.name}`);
@@ -84,6 +76,7 @@ class RokuAccessory {
             if (this.muted) {
               return this.roku.keypress(keys.VOLUME_MUTE);
             }
+            return Promise.resolve();
           })
           .then(() => callback(null))
           .catch(callback);
@@ -129,8 +122,8 @@ class RokuAccessory {
 
     channel
       .getCharacteristic(Characteristic.On)
-      .on('get', callback => {
-        this.roku.active().then(app => {
+      .on('get', (callback) => {
+        this.roku.active().then((app) => {
           callback(null, app && app.id === id);
         }).catch(callback);
       })
@@ -143,7 +136,7 @@ class RokuAccessory {
           // TODO: return to home screen
           callback(null, false);
         }
-      })
+      });
 
     return channel;
   }
@@ -152,3 +145,11 @@ class RokuAccessory {
     return this.services;
   }
 }
+
+module.exports = (homebridge) => {
+  console.log(`homebridge API version: ${homebridge.version}`);
+
+  ({ Service, Characteristic } = homebridge.hap);
+
+  homebridge.registerAccessory('homebridge-roku', 'Roku', RokuAccessory);
+};

@@ -11,48 +11,48 @@ const HOMEBRIDGE_CONFIG = path.join(process.env.HOME, '.homebridge', 'config.jso
  * @return {Promise<Object>}
  */
 function generateConfig() {
-  return Client.discover().then(device => {
-    const ip = device.ip;
+  return Client.discover().then((device) => {
+    const { ip } = device;
     const appMap = {};
-    return device.apps().then(apps =>
-      apps.forEach(app => appMap[app.name] = app.id))
-    .then(() => device.info())
-    .then(info => ({ ip, appMap, info }))
+    return device.apps()
+      .then(apps => apps.forEach((app) => { appMap[app.name] = app.id; }))
+      .then(() => device.info())
+      .then(info => ({ ip, appMap, info }));
   })
-  .then(({ ip, appMap, info }) => {
-    const config = {
-      accessories: [
-        {
-          accessory: "Roku",
-          name: "Roku",
-          ip,
-          appMap,
-          info,
-        },
-      ],
-    };
+    .then(({ ip, appMap, info }) => {
+      const config = {
+        accessories: [
+          {
+            ip,
+            info,
+            appMap,
+            name: 'Roku',
+            accessory: 'Roku',
+          },
+        ],
+      };
 
-    return config;
-  });
+      return config;
+    });
 }
 
 /**
  * Merge two config files together. Assumes that
  * string arguments are file names and loads them
  * before merging.
- * @param {Object|string} configA
- * @param {Object|string} configB
+ * @param {Object|string} configAName
+ * @param {Object|string} configBName
  * @return {Object} The merged config.
  */
-function mergeConfigs(configA, configB) {
+function mergeConfigs(configAName, configBName) {
   function readConfig(name) {
     if (typeof name === 'string') {
       return JSON.parse(fs.readFileSync(name));
     }
-    return name
+    return name;
   }
-  configA = readConfig(configA);
-  configB = readConfig(configB);
+  const configA = readConfig(configAName);
+  const configB = readConfig(configBName);
   return deepmerge(configA, configB);
 }
 

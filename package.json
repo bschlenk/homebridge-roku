@@ -4,7 +4,8 @@
   "description": "Control Roku media players through homebridge",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "lint": "eslint bin src scripts/**/*.js",
+    "test": "npm run lint && jest",
     "test:watch": "jest --watch",
     "coverage": "jest --coverage",
     "start": "./scripts/setup.js && DEBUG=* homebridge -D -U . -P .",
@@ -27,6 +28,9 @@
   },
   "homepage": "https://github.com/bschlenk/homebridge-roku#readme",
   "devDependencies": {
+    "eslint": "^4.13.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
     "jest": "^21.2.1"
   },
   "dependencies": {

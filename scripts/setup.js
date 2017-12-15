@@ -23,7 +23,7 @@ generateConfig().then((config) => {
     merged = mergeConfigs(sampleConfig, config);
   }
   fs.writeFileSync(configFile, JSON.stringify(merged, null, 4));
-}).catch(err => {
+}).catch((err) => {
   console.error('failed to configure development config file', err);
   process.exit(1);
 });

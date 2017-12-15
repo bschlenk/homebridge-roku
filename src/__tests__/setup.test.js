@@ -1,3 +1,4 @@
+/* eslint-env jest */
 const { generateConfig, mergeConfigWithMaster, HOMEBRIDGE_CONFIG } = require('../setup');
 
 jest.mock('roku-client');
@@ -8,6 +9,7 @@ const IP = '192.168.1.1';
 describe('setup', () => {
   describe('#generateConfig()', () => {
     beforeEach(() => {
+      // eslint-disable-next-line global-require
       require('roku-client').__setClient(
         IP,
         [
@@ -17,11 +19,12 @@ describe('setup', () => {
         {
           manufacturer: 'TCL',
           serialNumber: '12345',
-        });
+        },
+      );
     });
 
-    it('should return the generated config', () => {
-      return generateConfig().then((config) => {
+    it('should return the generated config', () =>
+      generateConfig().then((config) => {
         expect(config).toBeDefined();
         const { accessories } = config;
         expect(accessories).toBeInstanceOf(Array);
@@ -34,13 +37,12 @@ describe('setup', () => {
           appMap: { Netflix: '1234', Spotify: '4567' },
           info: { manufacturer: 'TCL', serialNumber: '12345' },
         });
-      });
-    });
-
+      }));
   });
 
   describe('#mergeConfigWithMaster()', () => {
     beforeEach(() => {
+      // eslint-disable-next-line global-require
       require('fs').__setReadFile(JSON.stringify({
         bridge: {
           name: 'homebridge',
@@ -62,10 +64,11 @@ describe('setup', () => {
             accessory: 'Roku',
             name: 'Roku',
             ip: IP,
-          }
+          },
         ],
       });
 
+      // eslint-disable-next-line global-require
       const written = JSON.parse(require('fs').__getWrittenFile(HOMEBRIDGE_CONFIG));
       expect(written).toEqual({
         bridge: {
