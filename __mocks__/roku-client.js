@@ -1,3 +1,5 @@
+/* eslint-env jest */
+
 'use strict';
 
 const roku = jest.genMockFromModule('roku-client');

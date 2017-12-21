@@ -1,3 +1,5 @@
+'use strict';
+
 const { Client, keys } = require('roku-client');
 
 let Service;

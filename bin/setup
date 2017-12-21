@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict';
+
 const { generateConfig, mergeConfigWithMaster, HOMEBRIDGE_CONFIG } = require('../src/setup');
 
 const args = process.argv.slice(2);
@@ -13,6 +15,6 @@ generateConfig()
     } else {
       console.log(JSON.stringify(config, null, 4));
     }
-  }).catch(err => {
-    console.error(err.stack)
+  }).catch((err) => {
+    console.error(err.stack);
   });

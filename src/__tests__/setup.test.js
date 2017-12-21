@@ -1,5 +1,12 @@
 /* eslint-env jest */
-const { generateConfig, mergeConfigWithMaster, HOMEBRIDGE_CONFIG } = require('../setup');
+
+'use strict';
+
+const {
+  generateConfig,
+  mergeConfigWithMaster,
+  HOMEBRIDGE_CONFIG,
+} = require('../setup');
 
 jest.mock('roku-client');
 jest.mock('fs');

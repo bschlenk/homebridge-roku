@@ -1,3 +1,5 @@
+'use strict';
+
 const { Client } = require('roku-client');
 const fs = require('fs');
 const path = require('path');
