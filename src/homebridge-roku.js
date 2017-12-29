@@ -40,10 +40,10 @@ class RokuAccessory {
     const accessoryInfo = new Service.AccessoryInformation();
 
     accessoryInfo
-      .setCharacteristic(Characteristic.Manufacturer, this.info['vendor-name'])
-      .setCharacteristic(Characteristic.Model, this.info['model-name'])
-      .setCharacteristic(Characteristic.Name, this.info['user-device-name'])
-      .setCharacteristic(Characteristic.SerialNumber, this.info['serial-number']);
+      .setCharacteristic(Characteristic.Manufacturer, this.info.vendorName)
+      .setCharacteristic(Characteristic.Model, this.info.modelName)
+      .setCharacteristic(Characteristic.Name, this.info.userDeviceName)
+      .setCharacteristic(Characteristic.SerialNumber, this.info.serialNumber);
 
     return accessoryInfo;
   }
@@ -73,14 +73,17 @@ class RokuAccessory {
       .on('get', callback => callback(null, this.muted))
       .on('set', (value, callback) => {
         this.muted = value;
-        this.roku.keypress(keys.VOLUME_DOWN)
-          .then(() => this.roku.keypress(keys.VOLUME_UP))
-          .then(() => {
-            if (this.muted) {
-              return this.roku.keypress(keys.VOLUME_MUTE);
-            }
-            return Promise.resolve();
-          })
+        const command = this.roku.command()
+          // toggling the volume up and down is a reliable way to unmute
+          // the TV if the current state is not known
+          .volumeDown()
+          .volumeUp();
+
+        if (this.muted) {
+          command.volumeMute();
+        }
+
+        command.send()
           .then(() => callback(null))
           .catch(callback);
       });
@@ -103,11 +106,9 @@ class RokuAccessory {
       .getCharacteristic(Characteristic.On)
       .on('get', callback => callback(null, false))
       .on('set', (value, callback) => {
-        let promise = Promise.resolve();
-        for (let i = 0; i < 10; ++i) {
-          promise = promise.then(this.roku.keypress(key));
-        }
-        promise
+        this.roku.command()
+          .keypress(key, 10)
+          .send()
           .then(() => callback(null, false))
           .catch(callback);
       });
