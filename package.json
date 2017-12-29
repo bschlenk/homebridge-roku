@@ -9,7 +9,7 @@
     "test:watch": "jest --watch",
     "coverage": "jest --coverage",
     "start": "./scripts/setup.js && DEBUG=* homebridge -D -U . -P .",
-    "publishOnly": "npm run test"
+    "prepublishOnly": "npm run test"
   },
   "repository": {
     "type": "git",
