@@ -1,6 +1,7 @@
 'use strict';
 
 const { Client, keys } = require('roku-client');
+const map = require('lodash.map');
 
 let Service;
 let Characteristic;
@@ -115,8 +116,7 @@ class RokuAccessory {
   }
 
   setupChannels() {
-    return Object.entries(this.appMap)
-      .map(([name, id]) => this.setupChannel(name, id));
+    return map(this.appMap, (id, name) => this.setupChannel(name, id));
   }
 
   setupChannel(name, id) {
