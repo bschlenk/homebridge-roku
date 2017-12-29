@@ -13,29 +13,48 @@ const HOMEBRIDGE_CONFIG = path.join(process.env.HOME, '.homebridge', 'config.jso
  * @return {Promise<Object>}
  */
 function generateConfig() {
-  return Client.discover().then((device) => {
-    const { ip } = device;
-    const appMap = {};
-    return device.apps()
-      .then(apps => apps.forEach((app) => { appMap[app.name] = app.id; }))
-      .then(() => device.info())
-      .then(info => ({ ip, appMap, info }));
-  })
-    .then(({ ip, appMap, info }) => {
-      const config = {
-        accessories: [
-          {
-            ip,
-            info,
-            appMap,
-            name: 'Roku',
-            accessory: 'Roku',
-          },
-        ],
-      };
+  return Client.discover()
+    .then((device) => {
+      const { ip } = device;
+      const appMap = {};
+      return device.apps()
+        .then(apps => apps.forEach((app) => { appMap[app.name] = app.id; }))
+        .then(() => device.info())
+        .then(info => ({ ip, appMap, info }));
+    })
+    .then(({ ip, appMap, info }) => ({
+      accessories: [
+        {
+          ip,
+          info,
+          appMap,
+          name: 'Roku',
+          accessory: 'Roku',
+        },
+      ],
+    }));
+}
 
-      return config;
-    });
+/**
+ * Pass to `deepmerge` to merge together objects with the same name
+ * within merging arrays.
+ * @param {any[]} dest The destination array.
+ * @param {any[]} source The source array.
+ * @return {any[]} The new merged array.
+ */
+function arrayMerge(dest, source) {
+  const merged = dest.map((destEl) => {
+    if (!Object.prototype.hasOwnProperty.call(destEl, 'name')) {
+      return destEl;
+    }
+    const idx = source.findIndex(sourceEl => destEl.name === sourceEl.name);
+    if (idx >= 0) {
+      const [match] = source.splice(idx, 1);
+      return deepmerge(destEl, match);
+    }
+    return destEl;
+  });
+  return merged.concat(source);
 }
 
 /**
@@ -55,7 +74,7 @@ function mergeConfigs(configAName, configBName) {
   }
   const configA = readConfig(configAName);
   const configB = readConfig(configBName);
-  return deepmerge(configA, configB);
+  return deepmerge(configA, configB, { arrayMerge });
 }
 
 /**

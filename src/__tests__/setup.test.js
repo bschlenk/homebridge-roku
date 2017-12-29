@@ -95,5 +95,42 @@ describe('setup', () => {
         ],
       });
     });
+
+    it('should combine two configs if they have the same name', () => {
+      mergeConfigWithMaster({
+        accessories: [
+          {
+            accessory: 'Roku',
+            name: 'Roku',
+            ip: IP,
+          },
+          {
+            name: 'test',
+            ip: 'abc',
+          },
+        ],
+      });
+
+      // eslint-disable-next-line global-require
+      const written = JSON.parse(require('fs').__getWrittenFile(HOMEBRIDGE_CONFIG));
+      expect(written).toEqual({
+        bridge: {
+          name: 'homebridge',
+        },
+        description: 'test',
+        accessories: [
+          {
+            accessory: 'test',
+            name: 'test',
+            ip: 'abc',
+          },
+          {
+            accessory: 'Roku',
+            name: 'Roku',
+            ip: IP,
+          },
+        ],
+      });
+    });
   });
 });
