@@ -50,6 +50,18 @@ volume has been done using a switch. When it (if ever) does support
 the speaker service, volume will be hopefuly be much more natural,
 as in "Set RokuVolume to 70" or "Increase RokuVolume by 10".
 
+## Migrating Major Versions
+
+I'm trying to follow strict semver, so major version bumps indicate a breaking
+change.
+
+### 1.x.x -> 2.x.x
+
+Roku info now comes back camelcase, and code expects camelcase. Running
+`homebridge-roku-config --merge` now merges accessory configs if they
+have the same `name` field, so running this once should be enough to
+upgrade to `2.x.x`.
+
 ## TODO
 
 * Possibly fetch apps at homebridge start time or periodically so that the config
