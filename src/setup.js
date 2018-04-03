@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const deepmerge = require('deepmerge');
 
-const HOMEBRIDGE_CONFIG = path.join(process.env.HOME, '.homebridge', 'config.json');
+const HOMEBRIDGE_CONFIG = path.join(os.homedir(), '.homebridge', 'config.json');
 
 /**
  * Generate or merge the configuration for homebridge-roku by querying
