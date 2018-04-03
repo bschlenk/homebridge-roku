@@ -126,18 +126,21 @@ class RokuAccessory {
     channel
       .getCharacteristic(Characteristic.On)
       .on('get', (callback) => {
-        this.roku.active().then((app) => {
-          callback(null, app && app.id === id);
-        }).catch(callback);
+        this.roku.active()
+          .then((app) => {
+            callback(null, app && app.id === id);
+          })
+          .catch(callback);
       })
       .on('set', (value, callback) => {
         if (value) {
           this.roku.launch(id)
             .then(() => callback(null, true))
-            .catch(err => callback(err));
+            .catch(callback);
         } else {
-          // TODO: return to home screen
-          callback(null, false);
+          this.roku.keypress(keys.HOME)
+            .then(() => callback(null, false))
+            .catch(callback);
         }
       });
 
