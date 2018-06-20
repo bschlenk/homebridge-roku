@@ -37,6 +37,14 @@ improvements.
 * Turn on RokuNetflix
 * Turn on Roku{app name}
 
+## Helping Out
+
+There are many versions of Roku devices, each with a different feature set.
+In order to support features across all these devices, it would be helpful to see what
+config values each one exposes. If you would like to help out, feel free to add your
+config to [this issue](https://github.com/bschlenk/homebridge-roku/issues/9). You can replace
+any fields you think are private with "\<redacted\>".
+
 ## Limitations
 
 I have only tested this with a [Roku TV](https://www.amazon.com/gp/product/B00SG473NO), so there may be more limitations I haven't come across...
