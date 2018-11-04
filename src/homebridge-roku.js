@@ -153,8 +153,6 @@ class RokuAccessory {
 }
 
 module.exports = (homebridge) => {
-  console.log(`homebridge API version: ${homebridge.version}`);
-
   ({ Service, Characteristic } = homebridge.hap);
 
   homebridge.registerAccessory('homebridge-roku', 'Roku', RokuAccessory);
