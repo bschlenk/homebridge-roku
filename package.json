@@ -6,8 +6,7 @@
   "scripts": {
     "lint": "eslint bin src scripts/**/*.js",
     "test": "npm run lint && jest",
-    "test:watch": "jest --watch --coverage",
-    "coverage": "jest --coverage",
+    "test:watch": "jest --watch",
     "start": "./scripts/setup.js && DEBUG=* homebridge -D -U . -P .",
     "prepublishOnly": "npm run test"
   },
