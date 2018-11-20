@@ -30,8 +30,8 @@ describe('setup', () => {
       );
     });
 
-    it('should return the generated config', () =>
-      generateConfig().then((config) => {
+    it('should return the generated config', () => generateConfig()
+      .then((config) => {
         expect(config).toBeDefined();
         const { accessories } = config;
         expect(accessories).toBeInstanceOf(Array);
