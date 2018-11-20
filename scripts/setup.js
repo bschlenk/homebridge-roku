@@ -29,4 +29,3 @@ generateConfig().then((config) => {
   console.error('failed to configure development config file', err);
   process.exit(1);
 });
-
