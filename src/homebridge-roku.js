@@ -56,7 +56,8 @@ class RokuAccessory {
       .on('get', callback => callback(null, this.poweredOn))
       .on('set', (value, callback) => {
         this.poweredOn = value;
-        this.roku.keypress('Power')
+        this.roku
+          .keypress('Power')
           .then(() => callback(null))
           .catch(callback);
       });
@@ -73,7 +74,8 @@ class RokuAccessory {
       .on('get', callback => callback(null, this.muted))
       .on('set', (value, callback) => {
         this.muted = value;
-        const command = this.roku.command()
+        const command = this.roku
+          .command()
           // toggling the volume up and down is a reliable way to unmute
           // the TV if the current state is not known
           .volumeDown()
@@ -83,7 +85,8 @@ class RokuAccessory {
           command.volumeMute();
         }
 
-        command.send()
+        command
+          .send()
           .then(() => callback(null))
           .catch(callback);
       });
@@ -106,7 +109,8 @@ class RokuAccessory {
       .getCharacteristic(Characteristic.On)
       .on('get', callback => callback(null, false))
       .on('set', (value, callback) => {
-        this.roku.command()
+        this.roku
+          .command()
           .keypress(key, 10)
           .send()
           .then(() => callback(null, false))
@@ -125,20 +129,23 @@ class RokuAccessory {
 
     channel
       .getCharacteristic(Characteristic.On)
-      .on('get', (callback) => {
-        this.roku.active()
-          .then((app) => {
+      .on('get', callback => {
+        this.roku
+          .active()
+          .then(app => {
             callback(null, app && app.id === id);
           })
           .catch(callback);
       })
       .on('set', (value, callback) => {
         if (value) {
-          this.roku.launch(id)
+          this.roku
+            .launch(id)
             .then(() => callback(null, true))
             .catch(callback);
         } else {
-          this.roku.keypress(keys.HOME)
+          this.roku
+            .keypress(keys.HOME)
             .then(() => callback(null, false))
             .catch(callback);
         }
@@ -152,7 +159,7 @@ class RokuAccessory {
   }
 }
 
-module.exports = (homebridge) => {
+module.exports = homebridge => {
   ({ Service, Characteristic } = homebridge.hap);
 
   homebridge.registerAccessory('homebridge-roku', 'Roku', RokuAccessory);

@@ -1,3 +1,7 @@
+/* eslint-env jest */
+
+'use strict';
+
 const fs = jest.genMockFromModule('fs');
 
 let READ_FILE = {};
@@ -6,11 +10,11 @@ function __setReadFile(readFile) {
   READ_FILE = readFile;
 }
 
-function readFileSync(fname) {
+function readFileSync() {
   return READ_FILE;
 }
 
-let WRITTEN_FILES = {};
+const WRITTEN_FILES = {};
 
 function __getWrittenFile(name) {
   return WRITTEN_FILES[name];

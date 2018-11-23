@@ -15,11 +15,16 @@ const HOMEBRIDGE_CONFIG = path.join(os.homedir(), '.homebridge', 'config.json');
  */
 function generateConfig() {
   return Client.discover()
-    .then((device) => {
+    .then(device => {
       const { ip } = device;
       const appMap = {};
-      return device.apps()
-        .then(apps => apps.forEach((app) => { appMap[app.name] = app.id; }))
+      return device
+        .apps()
+        .then(apps =>
+          apps.forEach(app => {
+            appMap[app.name] = app.id;
+          }),
+        )
         .then(() => device.info())
         .then(info => ({ ip, appMap, info }));
     })
@@ -44,7 +49,7 @@ function generateConfig() {
  * @return {any[]} The new merged array.
  */
 function arrayMerge(dest, source) {
-  const merged = dest.map((destEl) => {
+  const merged = dest.map(destEl => {
     if (!Object.prototype.hasOwnProperty.call(destEl, 'name')) {
       return destEl;
     }
@@ -69,7 +74,7 @@ function arrayMerge(dest, source) {
 function mergeConfigs(configAName, configBName) {
   function readConfig(name) {
     if (typeof name === 'string') {
-      return JSON.parse(fs.readFileSync(name));
+      return JSON.parse(fs.readFileSync(name).toString('utf-8'));
     }
     return name;
   }

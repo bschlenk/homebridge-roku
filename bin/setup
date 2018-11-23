@@ -2,19 +2,24 @@
 
 'use strict';
 
-const { generateConfig, mergeConfigWithMaster, HOMEBRIDGE_CONFIG } = require('../src/setup');
+const {
+  generateConfig,
+  mergeConfigWithMaster,
+  HOMEBRIDGE_CONFIG,
+} = require('../src/setup');
 
 const args = process.argv.slice(2);
 const shouldMerge = args[0] === '--merge';
 
 generateConfig()
-  .then((config) => {
+  .then(config => {
     if (shouldMerge) {
       mergeConfigWithMaster(config);
       console.log(`Added roku accessory configuration to ${HOMEBRIDGE_CONFIG}`);
     } else {
       console.log(JSON.stringify(config, null, 4));
     }
-  }).catch((err) => {
+  })
+  .catch(err => {
     console.error(err.stack);
   });

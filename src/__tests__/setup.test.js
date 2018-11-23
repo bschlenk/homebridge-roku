@@ -19,10 +19,7 @@ describe('setup', () => {
       // eslint-disable-next-line global-require
       require('roku-client').__setClient(
         IP,
-        [
-          { name: 'Netflix', id: '1234' },
-          { name: 'Spotify', id: '4567' },
-        ],
+        [{ name: 'Netflix', id: '1234' }, { name: 'Spotify', id: '4567' }],
         {
           manufacturer: 'TCL',
           serialNumber: '12345',
@@ -30,8 +27,8 @@ describe('setup', () => {
       );
     });
 
-    it('should return the generated config', () => generateConfig()
-      .then((config) => {
+    it('should return the generated config', () =>
+      generateConfig().then(config => {
         expect(config).toBeDefined();
         const { accessories } = config;
         expect(accessories).toBeInstanceOf(Array);
@@ -50,18 +47,20 @@ describe('setup', () => {
   describe('#mergeConfigWithMaster()', () => {
     beforeEach(() => {
       // eslint-disable-next-line global-require
-      require('fs').__setReadFile(JSON.stringify({
-        bridge: {
-          name: 'homebridge',
-        },
-        description: 'test',
-        accessories: [
-          {
-            accessory: 'test',
-            name: 'test',
+      require('fs').__setReadFile(
+        JSON.stringify({
+          bridge: {
+            name: 'homebridge',
           },
-        ],
-      }));
+          description: 'test',
+          accessories: [
+            {
+              accessory: 'test',
+              name: 'test',
+            },
+          ],
+        }),
+      );
     });
 
     it('should combine the existing config with the given config', () => {
@@ -75,8 +74,10 @@ describe('setup', () => {
         ],
       });
 
-      // eslint-disable-next-line global-require
-      const written = JSON.parse(require('fs').__getWrittenFile(HOMEBRIDGE_CONFIG));
+      const written = JSON.parse(
+        // eslint-disable-next-line global-require
+        require('fs').__getWrittenFile(HOMEBRIDGE_CONFIG),
+      );
       expect(written).toEqual({
         bridge: {
           name: 'homebridge',
@@ -111,8 +112,10 @@ describe('setup', () => {
         ],
       });
 
-      // eslint-disable-next-line global-require
-      const written = JSON.parse(require('fs').__getWrittenFile(HOMEBRIDGE_CONFIG));
+      const written = JSON.parse(
+        // eslint-disable-next-line global-require
+        require('fs').__getWrittenFile(HOMEBRIDGE_CONFIG),
+      );
       expect(written).toEqual({
         bridge: {
           name: 'homebridge',
