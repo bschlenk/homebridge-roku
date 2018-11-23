@@ -52,6 +52,10 @@ class Client {
           pushKeys(key, n);
           return proxy;
         },
+        exec: cb => {
+          cb(proxy);
+          return proxy;
+        },
       },
       {
         get: (target, prop) => {
