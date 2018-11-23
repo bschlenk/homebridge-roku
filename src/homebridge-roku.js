@@ -74,18 +74,13 @@ class RokuAccessory {
       .on('get', callback => callback(null, this.muted))
       .on('set', (value, callback) => {
         this.muted = value;
-        const command = this.roku
+        this.roku
           .command()
           // toggling the volume up and down is a reliable way to unmute
           // the TV if the current state is not known
           .volumeDown()
-          .volumeUp();
-
-        if (this.muted) {
-          command.volumeMute();
-        }
-
-        command
+          .volumeUp()
+          .exec(cmd => this.muted && cmd.volumeMute())
           .send()
           .then(() => callback(null))
           .catch(callback);
