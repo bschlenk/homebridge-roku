@@ -1,7 +1,11 @@
-const nodeSSDP = jest.genMockFromModule('node-ssdp');
-const EventEmitter = require('events').EventEmitter;
+/* eslint-env jest */
 
-let HEADERS = {};
+'use strict';
+
+const nodeSSDP = jest.genMockFromModule('node-ssdp');
+const { EventEmitter } = require('events');
+
+const HEADERS = {};
 
 class Client extends EventEmitter {
   search(key) {
