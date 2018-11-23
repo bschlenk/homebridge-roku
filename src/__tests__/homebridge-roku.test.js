@@ -115,7 +115,7 @@ describe('homebridge-roku', () => {
     });
 
     it('should have proper service and name set', () => {
-      expect(powerSwitch.service).toEqual('RokuPower');
+      expect(powerSwitch.service).toEqual('Roku Power');
       expect(powerSwitch.name).toEqual('Power');
     });
 
@@ -196,7 +196,7 @@ describe('homebridge-roku', () => {
       });
 
       it('should have the proper service and name', () => {
-        expect(keySwitch.service).toEqual(`Roku${keypress}`);
+        expect(keySwitch.service).toEqual(`Roku ${keypress}`);
         expect(keySwitch.name).toEqual(keypress);
       });
 
@@ -241,7 +241,7 @@ describe('homebridge-roku', () => {
       });
 
       it('should have proper service and name', () => {
-        expect(channelSwitch.service).toEqual(`Roku${channel}`);
+        expect(channelSwitch.service).toEqual(`Roku ${channel}`);
         expect(channelSwitch.name).toEqual(`${channel}`);
       });
 
