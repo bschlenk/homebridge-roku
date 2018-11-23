@@ -103,7 +103,10 @@ class RokuAccessory {
   }
 
   setupVolume(key) {
-    const volume = new Service.Switch(`${this.name}${key}`, key);
+    const volume = new Service.Switch(
+      `${this.name}${key.command}`,
+      key.command,
+    );
 
     volume
       .getCharacteristic(Characteristic.On)

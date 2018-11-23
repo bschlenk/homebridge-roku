@@ -34,33 +34,37 @@ class Client {
   }
 
   keypress(key) {
-    this._keys.push(key);
+    this._keys.push(typeof key === 'string' ? key : key.command);
     return Promise.resolve();
   }
 
   command() {
     const pushKeys = (key, n) => {
+      const command = typeof key === 'string' ? key : key.command;
       for (let i = 0; i < n; ++i) {
-        this._keys.push(`${key[0].toUpperCase()}${key.substr(1)}`);
+        this._keys.push(`${command[0].toUpperCase()}${command.substr(1)}`);
       }
     };
-    const proxy = new Proxy({
-      send: () => Promise.resolve(),
-      keypress: (key, n) => {
-        pushKeys(key, n);
-        return proxy;
-      },
-    }, {
-      get: (target, prop) => {
-        if (prop in target) {
-          return target[prop];
-        }
-        return (n = 1) => {
-          pushKeys(prop, n);
+    const proxy = new Proxy(
+      {
+        send: () => Promise.resolve(),
+        keypress: (key, n) => {
+          pushKeys(key, n);
           return proxy;
-        };
+        },
       },
-    });
+      {
+        get: (target, prop) => {
+          if (prop in target) {
+            return target[prop];
+          }
+          return (n = 1) => {
+            pushKeys(prop, n);
+            return proxy;
+          };
+        },
+      },
+    );
     return proxy;
   }
 }
