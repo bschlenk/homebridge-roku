@@ -49,7 +49,7 @@ class RokuAccessory {
   }
 
   setupSwitch() {
-    const switch_ = new Service.Switch(`${this.name}Power`, 'Power');
+    const switch_ = new Service.Switch(`${this.name} Power`, 'Power');
 
     switch_
       .getCharacteristic(Characteristic.On)
@@ -67,7 +67,7 @@ class RokuAccessory {
 
   setupMute() {
     // Speaker seems to be unsupported, emmulating with a switch
-    const volume = new Service.Switch(`${this.name}Mute`, 'Mute');
+    const volume = new Service.Switch(`${this.name} Mute`, 'Mute');
 
     volume
       .getCharacteristic(Characteristic.On)
@@ -99,7 +99,7 @@ class RokuAccessory {
 
   setupVolume(key) {
     const volume = new Service.Switch(
-      `${this.name}${key.command}`,
+      `${this.name} ${key.command}`,
       key.command,
     );
 
@@ -123,7 +123,7 @@ class RokuAccessory {
   }
 
   setupChannel(name, id) {
-    const channel = new Service.Switch(`${this.name}${name}`, name);
+    const channel = new Service.Switch(`${this.name} ${name}`, name);
 
     channel
       .getCharacteristic(Characteristic.On)
