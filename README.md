@@ -49,6 +49,11 @@ won't. Feel free to send pull requests with improvements.
 
 ## Configuration
 
+The command invocations can be modified by setting the `name` field in the
+accessory section of the config. The setup script sets it to `Roku`, but it can
+be set to whatever you want it to be. The invocations listed above would then
+use the name configured instead of `Roku`.
+
 The amount that volume will be increased or decreased per volume up/down command
 can be set in the config. By default, both up and down will be done in
 increments of 5. To change this, there are two settings: `volumeIncrement` and
