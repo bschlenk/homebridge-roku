@@ -37,6 +37,14 @@ improvements.
 * Turn on RokuNetflix
 * Turn on Roku{app name}
 
+## Configuration
+
+The amount that volume will be increased or decreased per volume up/down command
+can be set in the config. By default, both up and down will be done in
+increments of 5. To change this, there are two settings: `volumeIncrement` and
+`volumeDecrement`. If only `volumeIncrement` is set, then both volume up and
+down will change by the same abount.
+
 ## Helping Out
 
 There are many versions of Roku devices, each with a different feature set.

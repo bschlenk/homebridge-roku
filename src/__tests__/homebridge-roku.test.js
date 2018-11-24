@@ -206,7 +206,7 @@ describe('homebridge-roku', () => {
         expect(getMock).toHaveBeenCalledWith(null, false);
       });
 
-      it(`should call ${keypress} 10 times on set`, done => {
+      it(`should call ${keypress} 5 times on set`, done => {
         on._events.set(true, (val1, val2) => {
           expect(val1).toBeNull();
           expect(val2).toBeFalsy();
@@ -216,11 +216,54 @@ describe('homebridge-roku', () => {
             keypress,
             keypress,
             keypress,
-            keypress,
-            keypress,
-            keypress,
-            keypress,
-            keypress,
+          ]);
+          done();
+        });
+      });
+    });
+  });
+
+  describe('volumeIncrement setting', () => {
+    it('should call VolumeUp/Down based on the volumeIncrement setting', done => {
+      config.volumeIncrement = 2;
+      accessory = new Accessory(() => {}, config);
+      const upSwitch = accessory.services[3];
+      const downSwitch = accessory.services[4];
+      const upOn = upSwitch.getCharacteristic('on');
+      const downOn = downSwitch.getCharacteristic('on');
+
+      upOn._events.set(true, () => {
+        downOn._events.set(true, () => {
+          expect(accessory.roku._keys).toEqual([
+            'VolumeUp',
+            'VolumeUp',
+            'VolumeDown',
+            'VolumeDown',
+          ]);
+          done();
+        });
+      });
+    });
+
+    it('should allow setting VolumeUp/Down independently', done => {
+      config.volumeIncrement = 4;
+      config.volumeDecrement = 3;
+      accessory = new Accessory(() => {}, config);
+      const upSwitch = accessory.services[3];
+      const downSwitch = accessory.services[4];
+      const upOn = upSwitch.getCharacteristic('on');
+      const downOn = downSwitch.getCharacteristic('on');
+
+      upOn._events.set(true, () => {
+        downOn._events.set(true, () => {
+          expect(accessory.roku._keys).toEqual([
+            'VolumeUp',
+            'VolumeUp',
+            'VolumeUp',
+            'VolumeUp',
+            'VolumeDown',
+            'VolumeDown',
+            'VolumeDown',
           ]);
           done();
         });

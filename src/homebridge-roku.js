@@ -1,5 +1,7 @@
 'use strict';
 
+const DEFAULT_VOLUME_INCREMENT = 5;
+
 const { Client, keys } = require('roku-client');
 const map = require('lodash.map');
 
@@ -19,6 +21,9 @@ class RokuAccessory {
     this.info = config.info;
     this.roku = new Client(config.ip);
     this.services = [];
+
+    this.volumeIncrement = config.volumeIncrement || DEFAULT_VOLUME_INCREMENT;
+    this.volumeDecrement = config.volumeDecrement || this.volumeIncrement;
 
     this.muted = false;
     this.volumeLevel = 50;
@@ -90,14 +95,14 @@ class RokuAccessory {
   }
 
   setupVolumeUp() {
-    return this.setupVolume(keys.VOLUME_UP);
+    return this.setupVolume(keys.VOLUME_UP, this.volumeIncrement);
   }
 
   setupVolumeDown() {
-    return this.setupVolume(keys.VOLUME_DOWN);
+    return this.setupVolume(keys.VOLUME_DOWN, this.volumeDecrement);
   }
 
-  setupVolume(key) {
+  setupVolume(key, increment) {
     const volume = new Service.Switch(
       `${this.name} ${key.command}`,
       key.command,
@@ -109,7 +114,7 @@ class RokuAccessory {
       .on('set', (value, callback) => {
         this.roku
           .command()
-          .keypress(key, 10)
+          .keypress(key, increment)
           .send()
           .then(() => callback(null, false))
           .catch(callback);
