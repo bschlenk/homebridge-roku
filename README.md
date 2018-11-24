@@ -38,14 +38,14 @@ won't. Feel free to send pull requests with improvements.
 
 ### Hey Siri...
 
-- Turn on RokuPower
-- Turn off RokuPower
-- Turn on RokuMute
-- Turn off RokuMute
-- Turn on RokuVolumeUp
-- Turn on RokuVolumeDown
-- Turn on RokuNetflix
-- Turn on Roku{app name}
+- Turn on Roku Power
+- Turn off Roku Power
+- Turn on Roku Mute
+- Turn off Roku Mute
+- Turn on Roku VolumeUp
+- Turn on Roku VolumeDown
+- Turn on Roku Netflix
+- Turn on Roku {app name}
 
 ## Configuration
 
