@@ -17,23 +17,23 @@ function generateConfig() {
   return Client.discover()
     .then(device => {
       const { ip } = device;
-      const appMap = {};
+      const inputs = [];
       return device
         .apps()
         .then(apps =>
           apps.forEach(app => {
-            appMap[app.name] = app.id;
+            inputs.push({ id: app.id, name: app.name });
           }),
         )
         .then(() => device.info())
-        .then(info => ({ ip, appMap, info }));
+        .then(info => ({ ip, inputs, info }));
     })
-    .then(({ ip, appMap, info }) => ({
+    .then(({ ip, inputs, info }) => ({
       accessories: [
         {
           ip,
           info,
-          appMap,
+          inputs,
           name: 'Roku',
           accessory: 'Roku',
         },
