@@ -4,9 +4,15 @@ const DEFAULT_VOLUME_INCREMENT = 5;
 
 const { Client, keys } = require('roku-client');
 const map = require('lodash.map');
+const tlv = require('hap-nodejs/lib/util/tlv');
 
 let Service;
 let Characteristic;
+
+const DisplayOrderTypes = {
+  ARRAY_ELEMENT_START: 0x1,
+  ARRAY_ELEMENT_END: 0x0
+};
 
 class RokuAccessory {
   constructor(log, config) {
@@ -17,8 +23,8 @@ class RokuAccessory {
       throw new Error(`An ip address is required for plugin ${this.name}`);
     }
 
-    this.appMap = config.appMap;
     this.info = config.info;
+    this.inputs = config.inputs;
     this.roku = new Client(config.ip);
     this.services = [];
 
@@ -26,19 +32,33 @@ class RokuAccessory {
     this.volumeDecrement = config.volumeDecrement || this.volumeIncrement;
 
     this.muted = false;
-    this.volumeLevel = 50;
-    this.poweredOn = false;
+    this.poweredOn = Characteristic.Active.INACTIVE;
+
+    this.buttons = {
+      [Characteristic.RemoteKey.REWIND]: keys.REVERSE,
+      [Characteristic.RemoteKey.FAST_FORWARD]: keys.FORWARD,
+      [Characteristic.RemoteKey.NEXT_TRACK]: keys.REVERSE,
+      [Characteristic.RemoteKey.PREVIOUS_TRACK]: keys.FORWARD,
+      [Characteristic.RemoteKey.ARROW_UP]: keys.UP,
+      [Characteristic.RemoteKey.ARROW_DOWN]: keys.DOWN,
+      [Characteristic.RemoteKey.ARROW_LEFT]: keys.LEFT,
+      [Characteristic.RemoteKey.ARROW_RIGHT]: keys.RIGHT,
+      [Characteristic.RemoteKey.SELECT]: keys.SELECT,
+      [Characteristic.RemoteKey.BACK]: keys.BACK,
+      [Characteristic.RemoteKey.EXIT]: keys.HOME,
+      [Characteristic.RemoteKey.PLAY_PAUSE]: keys.PLAY,
+      [Characteristic.RemoteKey.INFORMATION]: keys.INFO,
+    };
 
     this.setup();
   }
 
   setup() {
     this.services.push(this.setupAccessoryInfo());
-    this.services.push(this.setupSwitch());
-    this.services.push(this.setupMute());
-    this.services.push(this.setupVolumeUp());
-    this.services.push(this.setupVolumeDown());
-    this.services.push(...this.setupChannels());
+    const television = this.setupTelevision();
+    this.services.push(television);
+    this.services.push(this.setupTelevisionSpeaker(television));
+    this.services.push(...this.setupInputs(television));
   }
 
   setupAccessoryInfo() {
@@ -53,29 +73,90 @@ class RokuAccessory {
     return accessoryInfo;
   }
 
-  setupSwitch() {
-    const switch_ = new Service.Switch(`${this.name} Power`, 'Power');
+  setupTelevision() {
+    const television = new Service.Television(this.name);
 
-    switch_
-      .getCharacteristic(Characteristic.On)
-      .on('get', callback => callback(null, this.poweredOn))
-      .on('set', (value, callback) => {
-        this.poweredOn = value;
+    television
+      .getCharacteristic(Characteristic.Active)
+      .on('get', (callback) => {
+        this.roku
+          .info()
+          .then((info) => {
+            const value = info.powerMode === 'PowerOn' ? Characteristic.Active.ACTIVE : Characteristic.Active.INACTIVE;
+            this.poweredOn = value;
+            callback(null, value);
+          })
+          .catch(callback);
+      })
+      .on('set', (newValue, callback) => {
+        if (newValue == this.poweredOn) {
+          callback(null);
+          return;
+        }
+        this.poweredOn = newValue;
         this.roku
           .keypress('Power')
           .then(() => callback(null))
           .catch(callback);
+      })
+
+    television
+      .getCharacteristic(Characteristic.ActiveIdentifier)
+      .on('get', (callback) => {
+        this.roku
+          .active()
+          .then((app) => {
+            const index = app !== null ? this.inputs.findIndex((input) => input.id == app.id) : -1;
+            const hapId = index + 1;
+            callback(null, hapId);
+          })
+          .catch(callback);
+      })
+      .on('set', (index, callback) => {
+        const rokuId = this.inputs[index - 1].id
+        this.roku
+          .launch(rokuId)
+          .then(() => callback(null))
+          .catch(callback);
+      })
+
+    television
+      .getCharacteristic(Characteristic.ConfiguredName)
+      .setValue(this.info.userDeviceName)
+      .setProps({
+        perms: [Characteristic.Perms.READ]
       });
 
-    return switch_;
+    television
+      .setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE);
+
+    television
+      .getCharacteristic(Characteristic.DisplayOrder)
+      .setProps({
+        perms: [Characteristic.Perms.READ]
+      });
+
+    television
+      .getCharacteristic(Characteristic.RemoteKey)
+      .on('set', (newValue, callback) => {
+        this.roku
+          .keypress(this.buttons[newValue])
+          .then(() => callback(null))
+          .catch(callback);
+      });
+
+    return television;
   }
 
-  setupMute() {
-    // Speaker seems to be unsupported, emmulating with a switch
-    const volume = new Service.Switch(`${this.name} Mute`, 'Mute');
+  setupTelevisionSpeaker(television) {
+    if (this.info.isTv !== 'true') { return }
+    const speaker = new Service.TelevisionSpeaker(`${this.name} Speaker`);
 
-    volume
-      .getCharacteristic(Characteristic.On)
+    speaker
+      .setCharacteristic(Characteristic.VolumeControlType, Characteristic.VolumeControlType.RELATIVE);
+
+    speaker
+      .getCharacteristic(Characteristic.Mute)
       .on('get', callback => callback(null, this.muted))
       .on('set', (value, callback) => {
         this.muted = value;
@@ -91,70 +172,77 @@ class RokuAccessory {
           .catch(callback);
       });
 
-    return volume;
-  }
-
-  setupVolumeUp() {
-    return this.setupVolume(keys.VOLUME_UP, this.volumeIncrement);
-  }
-
-  setupVolumeDown() {
-    return this.setupVolume(keys.VOLUME_DOWN, this.volumeDecrement);
-  }
-
-  setupVolume(key, increment) {
-    const volume = new Service.Switch(
-      `${this.name} ${key.command}`,
-      key.command,
-    );
-
-    volume
-      .getCharacteristic(Characteristic.On)
-      .on('get', callback => callback(null, false))
-      .on('set', (value, callback) => {
-        this.roku
-          .command()
-          .keypress(key, increment)
-          .send()
-          .then(() => callback(null, false))
-          .catch(callback);
-      });
-
-    return volume;
-  }
-
-  setupChannels() {
-    return map(this.appMap, (id, name) => this.setupChannel(name, id));
-  }
-
-  setupChannel(name, id) {
-    const channel = new Service.Switch(`${this.name} ${name}`, name);
-
-    channel
-      .getCharacteristic(Characteristic.On)
-      .on('get', callback => {
-        this.roku
-          .active()
-          .then(app => {
-            callback(null, app && app.id === id);
-          })
-          .catch(callback);
-      })
-      .on('set', (value, callback) => {
-        if (value) {
+    speaker
+      .getCharacteristic(Characteristic.VolumeSelector)
+      .on('set', (newValue, callback) => {
+        if (newValue == Characteristic.VolumeSelector.INCREMENT) {
           this.roku
-            .launch(id)
-            .then(() => callback(null, true))
+            .command()
+            .keypress(keys.VOLUME_UP, this.volumeIncrement)
+            .send()
+            .then(() => callback(null))
             .catch(callback);
         } else {
           this.roku
-            .keypress(keys.HOME)
-            .then(() => callback(null, false))
+            .command()
+            .keypress(keys.VOLUME_DOWN, this.volumeDecrement)
+            .send()
+            .then(() => callback(null))
             .catch(callback);
         }
       });
 
-    return channel;
+    return speaker;
+  }
+
+  setupInputs(television) {
+    var identifiersTLV = Buffer.alloc(0);
+    const inputs = this.inputs.map((config, index) => {
+      const hapId = index + 1;
+      const input = this.setupInput(config.id, config.name, hapId, television);
+
+      if (identifiersTLV.length !== 0) {
+        identifiersTLV = Buffer.concat([
+          identifiersTLV,
+          tlv.encode(DisplayOrderTypes.ARRAY_ELEMENT_END, Buffer.alloc(0))
+        ]);
+      }
+
+      var element = Buffer.alloc(4);
+      element.writeUInt32LE(hapId, 0);
+      identifiersTLV = Buffer.concat([
+        identifiersTLV,
+        tlv.encode(DisplayOrderTypes.ARRAY_ELEMENT_START, element)
+      ]);
+
+      return input;
+    });
+
+    television
+      .setCharacteristic(Characteristic.DisplayOrder, identifiersTLV.toString('base64'));
+
+    return inputs;
+  }
+
+  setupInput(rokuId, name, hapId, television) {
+    const input = new Service.InputSource(`${this.name} ${name}`, rokuId);
+    const hdmiRegexp = /tvinput\.hdmi\d+/m;
+    const inputSourceType = hdmiRegexp.test(rokuId) ? Characteristic.InputSourceType.HDMI : Characteristic.InputSourceType.APPLICATION;
+
+    input
+      .setCharacteristic(Characteristic.Identifier, hapId)
+      .setCharacteristic(Characteristic.ConfiguredName, name)
+      .setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
+      .setCharacteristic(Characteristic.InputSourceType, inputSourceType);
+
+    input
+      .getCharacteristic(Characteristic.ConfiguredName)
+      .setProps({
+         perms: [Characteristic.Perms.READ]
+       });
+
+    television.addLinkedService(input);
+    return input;
   }
 
   getServices() {
