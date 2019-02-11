@@ -32,7 +32,6 @@ class RokuAccessory {
     this.volumeDecrement = config.volumeDecrement || this.volumeIncrement;
 
     this.muted = false;
-    this.poweredOn = Characteristic.Active.INACTIVE;
 
     this.buttons = {
       [Characteristic.RemoteKey.REWIND]: keys.REVERSE,
@@ -83,21 +82,22 @@ class RokuAccessory {
           .info()
           .then((info) => {
             const value = info.powerMode === 'PowerOn' ? Characteristic.Active.ACTIVE : Characteristic.Active.INACTIVE;
-            this.poweredOn = value;
             callback(null, value);
           })
           .catch(callback);
       })
       .on('set', (newValue, callback) => {
-        if (newValue == this.poweredOn) {
-          callback(null);
-          return;
+        if (newValue === Characteristic.Active.ACTIVE) {
+          this.roku
+            .keypress('PowerOn')
+            .then(() => callback(null))
+            .catch(callback);
+        } else {
+          this.roku
+            .keypress('PowerOff')
+            .then(() => callback(null))
+            .catch(callback);
         }
-        this.poweredOn = newValue;
-        this.roku
-          .keypress('Power')
-          .then(() => callback(null))
-          .catch(callback);
       })
 
     television
