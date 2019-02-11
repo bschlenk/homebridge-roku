@@ -5,6 +5,7 @@ const DEFAULT_VOLUME_INCREMENT = 5;
 const { Client, keys } = require('roku-client');
 const map = require('lodash.map');
 const tlv = require('hap-nodejs/lib/util/tlv');
+const plugin = require('../package');
 
 let Service;
 let Characteristic;
@@ -64,10 +65,11 @@ class RokuAccessory {
     const accessoryInfo = new Service.AccessoryInformation();
 
     accessoryInfo
-      .setCharacteristic(Characteristic.Manufacturer, this.info.vendorName)
+      .setCharacteristic(Characteristic.Manufacturer, this.info.vendorName || 'Roku, Inc.')
+      .setCharacteristic(Characteristic.Name, this.info.friendlyModelName || 'Roku')
       .setCharacteristic(Characteristic.Model, this.info.modelName)
-      .setCharacteristic(Characteristic.Name, this.info.userDeviceName)
-      .setCharacteristic(Characteristic.SerialNumber, this.info.serialNumber);
+      .setCharacteristic(Characteristic.SerialNumber, this.info.serialNumber)
+      .setCharacteristic(Characteristic.FirmwareRevision, this.info.softwareVersion || plugin.version);
 
     return accessoryInfo;
   }
