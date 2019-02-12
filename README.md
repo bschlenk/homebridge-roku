@@ -1,15 +1,25 @@
 # homebridge-roku
 
-[![npm
-version](https://badge.fury.io/js/homebridge-roku.svg)](https://badge.fury.io/js/homebridge-roku)
+[![npm][npm]][npm-url]
 
 Control your Roku media player from your iOS devices using apple's HomeKit. See
 [homebridge](https://github.com/nfarina/homebridge) for more information
 controlling 3rd party devices through HomeKit.
 
+## Alpha Version
+
+You are reading the documentation for homebridge-roku alpha. This
+version **only** works with iOS 12.2 and above. Visit
+[beta.apple.com](https://beta.apple.com/sp/betaprogram/) for
+instructions on iOS 12.2 beta.
+
+Visit the
+[master](https://github.com/bschlenk/homebridge-roku/tree/master) branch
+for the latest stable version.
+
 ## Installation
 
-1. Install globally by running `npm install -g homebridge-roku`
+1. Install globally by running `npm install -g homebridge-roku@next`
 2. Ensure Roku device is turned on
 3. Update config file with Roku info by running `homebridge-roku-config --merge`
 
@@ -32,20 +42,14 @@ for more information.
 
 ## Available Commands
 
-These commands are subject to change and sort of awkward right now. If I have
-more time to research homebridge I might try to improve them, but I probably
-won't. Feel free to send pull requests with improvements.
+The built in iOS remote needs to be enabled to use it:
 
-### Hey Siri...
+`Settings -> Control Center -> Customize Controls -> Apple TV Remote`
 
-- Turn on Roku Power
-- Turn off Roku Power
-- Turn on Roku Mute
-- Turn off Roku Mute
-- Turn on Roku VolumeUp
-- Turn on Roku VolumeDown
-- Turn on Roku Netflix
-- Turn on Roku {app name}
+This will allow you to access the remote from Control Center.
+
+As iOS 12.2 is still in beta, the available Siri commands are still
+changing and I haven't had time to document them.
 
 ## Configuration
 
@@ -58,7 +62,7 @@ The amount that volume will be increased or decreased per volume up/down command
 can be set in the config. By default, both up and down will be done in
 increments of 5. To change this, there are two settings: `volumeIncrement` and
 `volumeDecrement`. If only `volumeIncrement` is set, then both volume up and
-down will change by the same abount.
+down will change by the same amount.
 
 ## Helping Out
 
@@ -88,15 +92,19 @@ overcome by sending 100 volume down requests before sending X amount of volume
 up requests. I didn't feel like implementing this for obvious reasons, but pull
 requests are welcome :)
 
-Homekit doesn't support the speaker service right now which is why volume has
-been done using a switch. When it (if ever) does support the speaker service,
-volume will be hopefuly be much more natural, as in "Set RokuVolume to 70" or
-"Increase RokuVolume by 10".
-
 ## Migrating Major Versions
 
 I'm trying to follow strict semver, so major version bumps indicate a breaking
 change.
+
+### 2.x.x -> 3.x.x
+
+Currently in alpha, this release focuses on supporting iOS 12.2's new
+television homekit service.
+
+The `appMap` field of the config file has been renamed `inputs` and is
+now an array of objects. This change is to support the television
+service, which requires inputs have stable, sequential ids.
 
 ### 1.x.x -> 2.x.x
 
@@ -108,5 +116,6 @@ same `name` field, so running this once should be enough to upgrade to `2.x.x`.
 
 - Possibly fetch apps at homebridge start time or periodically so that the
   config generator doesn't need to be run when new channels are installed.
-- Figure out a better way to name the commands, if possible. For example, "Mute
-  the Roku" instead of "Turn on RokuMute".
+
+[npm]: https://img.shields.io/npm/v/homebridge-roku/next.svg?logo=npm
+[npm-url]: https://npmjs.com/package/homebridge-roku/v/next
