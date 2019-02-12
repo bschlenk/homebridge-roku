@@ -38,7 +38,10 @@ describe('setup', () => {
           accessory: 'Roku',
           name: 'Roku',
           ip: IP,
-          appMap: { Netflix: '1234', Spotify: '4567' },
+          inputs: [
+            { id: '1234', name: 'Netflix' },
+            { id: '4567', name: 'Spotify' },
+          ],
           info: { manufacturer: 'TCL', serialNumber: '12345' },
         });
       }));

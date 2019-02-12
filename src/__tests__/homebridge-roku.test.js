@@ -4,7 +4,7 @@
 
 const setupService = require('../homebridge-roku');
 
-describe('homebridge-roku', () => {
+describe.skip('homebridge-roku', () => {
   let Accessory;
   let accessory;
   let config;
