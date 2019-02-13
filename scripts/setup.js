@@ -7,7 +7,7 @@ const path = require('path');
 const {
   generateConfig,
   mergeConfigs,
-  HOMEBRIDGE_CONFIG,
+  HOMEBRIDGE_CONFIG
 } = require('../src/setup');
 
 const rootDir = path.join(__dirname, '..');
@@ -22,7 +22,7 @@ if (fs.existsSync(configFile)) {
 generateConfig()
   .then(config => {
     console.log(
-      'generating config.json... ensure your Roku device is powered on',
+      'generating config.json... ensure your Roku device is powered on'
     );
     let merged;
     if (fs.existsSync(HOMEBRIDGE_CONFIG)) {

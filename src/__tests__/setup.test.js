@@ -5,7 +5,7 @@
 const {
   generateConfig,
   mergeConfigWithMaster,
-  HOMEBRIDGE_CONFIG,
+  HOMEBRIDGE_CONFIG
 } = require('../setup');
 
 jest.mock('roku-client');
@@ -22,8 +22,8 @@ describe('setup', () => {
         [{ name: 'Netflix', id: '1234' }, { name: 'Spotify', id: '4567' }],
         {
           manufacturer: 'TCL',
-          serialNumber: '12345',
-        },
+          serialNumber: '12345'
+        }
       );
     });
 
@@ -40,9 +40,9 @@ describe('setup', () => {
           ip: IP,
           inputs: [
             { id: '1234', name: 'Netflix' },
-            { id: '4567', name: 'Spotify' },
+            { id: '4567', name: 'Spotify' }
           ],
-          info: { manufacturer: 'TCL', serialNumber: '12345' },
+          info: { manufacturer: 'TCL', serialNumber: '12345' }
         });
       }));
   });
@@ -53,16 +53,16 @@ describe('setup', () => {
       require('fs').__setReadFile(
         JSON.stringify({
           bridge: {
-            name: 'homebridge',
+            name: 'homebridge'
           },
           description: 'test',
           accessories: [
             {
               accessory: 'test',
-              name: 'test',
-            },
-          ],
-        }),
+              name: 'test'
+            }
+          ]
+        })
       );
     });
 
@@ -72,31 +72,31 @@ describe('setup', () => {
           {
             accessory: 'Roku',
             name: 'Roku',
-            ip: IP,
-          },
-        ],
+            ip: IP
+          }
+        ]
       });
 
       const written = JSON.parse(
         // eslint-disable-next-line global-require
-        require('fs').__getWrittenFile(HOMEBRIDGE_CONFIG),
+        require('fs').__getWrittenFile(HOMEBRIDGE_CONFIG)
       );
       expect(written).toEqual({
         bridge: {
-          name: 'homebridge',
+          name: 'homebridge'
         },
         description: 'test',
         accessories: [
           {
             accessory: 'test',
-            name: 'test',
+            name: 'test'
           },
           {
             accessory: 'Roku',
             name: 'Roku',
-            ip: IP,
-          },
-        ],
+            ip: IP
+          }
+        ]
       });
     });
 
@@ -106,36 +106,36 @@ describe('setup', () => {
           {
             accessory: 'Roku',
             name: 'Roku',
-            ip: IP,
+            ip: IP
           },
           {
             name: 'test',
-            ip: 'abc',
-          },
-        ],
+            ip: 'abc'
+          }
+        ]
       });
 
       const written = JSON.parse(
         // eslint-disable-next-line global-require
-        require('fs').__getWrittenFile(HOMEBRIDGE_CONFIG),
+        require('fs').__getWrittenFile(HOMEBRIDGE_CONFIG)
       );
       expect(written).toEqual({
         bridge: {
-          name: 'homebridge',
+          name: 'homebridge'
         },
         description: 'test',
         accessories: [
           {
             accessory: 'test',
             name: 'test',
-            ip: 'abc',
+            ip: 'abc'
           },
           {
             accessory: 'Roku',
             name: 'Roku',
-            ip: IP,
-          },
-        ],
+            ip: IP
+          }
+        ]
       });
     });
   });

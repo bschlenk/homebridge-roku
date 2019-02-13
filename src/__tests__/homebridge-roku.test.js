@@ -10,7 +10,7 @@ describe.skip('homebridge-roku', () => {
   let config;
   const appMap = {
     Netflix: 1,
-    Amazon: 2,
+    Amazon: 2
   };
 
   class Characteristic {
@@ -29,7 +29,7 @@ describe.skip('homebridge-roku', () => {
       this.service = service;
       this.name = name;
       this._characteristics = {
-        on: new Characteristic(),
+        on: new Characteristic()
       };
     }
 
@@ -55,7 +55,7 @@ describe.skip('homebridge-roku', () => {
     hap: {
       Service: {
         AccessoryInformation: Service,
-        Switch: Service,
+        Switch: Service
       },
 
       Characteristic: {
@@ -63,9 +63,9 @@ describe.skip('homebridge-roku', () => {
         Model: 'model',
         Name: 'name',
         SerialNumber: 'serialNumber',
-        On: 'on',
-      },
-    },
+        On: 'on'
+      }
+    }
   };
 
   beforeEach(() => {
@@ -77,9 +77,9 @@ describe.skip('homebridge-roku', () => {
         vendorName: 'abc',
         modelName: 'def',
         userDeviceName: 'ghi',
-        serialNumber: 'jkl',
+        serialNumber: 'jkl'
       },
-      appMap,
+      appMap
     };
     accessory = new Accessory(() => {}, config);
   });
@@ -168,7 +168,7 @@ describe.skip('homebridge-roku', () => {
         expect(accessory.roku._keys).toEqual([
           'VolumeDown',
           'VolumeUp',
-          'VolumeMute',
+          'VolumeMute'
         ]);
         done();
       });
@@ -215,7 +215,7 @@ describe.skip('homebridge-roku', () => {
             keypress,
             keypress,
             keypress,
-            keypress,
+            keypress
           ]);
           done();
         });
@@ -238,7 +238,7 @@ describe.skip('homebridge-roku', () => {
             'VolumeUp',
             'VolumeUp',
             'VolumeDown',
-            'VolumeDown',
+            'VolumeDown'
           ]);
           done();
         });
@@ -263,7 +263,7 @@ describe.skip('homebridge-roku', () => {
             'VolumeUp',
             'VolumeDown',
             'VolumeDown',
-            'VolumeDown',
+            'VolumeDown'
           ]);
           done();
         });

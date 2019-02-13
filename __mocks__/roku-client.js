@@ -16,7 +16,7 @@ class Client {
 
   active() {
     return Promise.resolve({
-      id: this._activeApp,
+      id: this._activeApp
     });
   }
 
@@ -55,7 +55,7 @@ class Client {
         exec: cb => {
           cb(proxy);
           return proxy;
-        },
+        }
       },
       {
         get: (target, prop) => {
@@ -66,8 +66,8 @@ class Client {
             pushKeys(prop, n);
             return proxy;
           };
-        },
-      },
+        }
+      }
     );
     return proxy;
   }

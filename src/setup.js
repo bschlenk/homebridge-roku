@@ -23,7 +23,7 @@ function generateConfig() {
         .then(apps =>
           apps.forEach(app => {
             inputs.push({ id: app.id, name: app.name });
-          }),
+          })
         )
         .then(() => device.info())
         .then(info => ({ ip, inputs, info }));
@@ -35,9 +35,9 @@ function generateConfig() {
           info,
           inputs,
           name: 'Roku',
-          accessory: 'Roku',
-        },
-      ],
+          accessory: 'Roku'
+        }
+      ]
     }));
 }
 
@@ -100,5 +100,5 @@ module.exports = {
   generateConfig,
   mergeConfigs,
   mergeConfigWithMaster,
-  HOMEBRIDGE_CONFIG,
+  HOMEBRIDGE_CONFIG
 };

@@ -5,7 +5,7 @@
 const {
   generateConfig,
   mergeConfigWithMaster,
-  HOMEBRIDGE_CONFIG,
+  HOMEBRIDGE_CONFIG
 } = require('../src/setup');
 
 const args = process.argv.slice(2);

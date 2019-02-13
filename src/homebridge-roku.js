@@ -47,7 +47,7 @@ class RokuAccessory {
       [Characteristic.RemoteKey.BACK]: keys.BACK,
       [Characteristic.RemoteKey.EXIT]: keys.HOME,
       [Characteristic.RemoteKey.PLAY_PAUSE]: keys.PLAY,
-      [Characteristic.RemoteKey.INFORMATION]: keys.INFO,
+      [Characteristic.RemoteKey.INFORMATION]: keys.INFO
     };
 
     this.setup();
@@ -65,11 +65,20 @@ class RokuAccessory {
     const accessoryInfo = new Service.AccessoryInformation();
 
     accessoryInfo
-      .setCharacteristic(Characteristic.Manufacturer, this.info.vendorName || 'Roku, Inc.')
-      .setCharacteristic(Characteristic.Name, this.info.friendlyModelName || 'Roku')
+      .setCharacteristic(
+        Characteristic.Manufacturer,
+        this.info.vendorName || 'Roku, Inc.'
+      )
+      .setCharacteristic(
+        Characteristic.Name,
+        this.info.friendlyModelName || 'Roku'
+      )
       .setCharacteristic(Characteristic.Model, this.info.modelName)
       .setCharacteristic(Characteristic.SerialNumber, this.info.serialNumber)
-      .setCharacteristic(Characteristic.FirmwareRevision, this.info.softwareVersion || plugin.version);
+      .setCharacteristic(
+        Characteristic.FirmwareRevision,
+        this.info.softwareVersion || plugin.version
+      );
 
     return accessoryInfo;
   }
@@ -79,11 +88,14 @@ class RokuAccessory {
 
     television
       .getCharacteristic(Characteristic.Active)
-      .on('get', (callback) => {
+      .on('get', callback => {
         this.roku
           .info()
-          .then((info) => {
-            const value = info.powerMode === 'PowerOn' ? Characteristic.Active.ACTIVE : Characteristic.Active.INACTIVE;
+          .then(info => {
+            const value =
+              info.powerMode === 'PowerOn'
+                ? Characteristic.Active.ACTIVE
+                : Characteristic.Active.INACTIVE;
             callback(null, value);
           })
           .catch(callback);
@@ -100,27 +112,30 @@ class RokuAccessory {
             .then(() => callback(null))
             .catch(callback);
         }
-      })
+      });
 
     television
       .getCharacteristic(Characteristic.ActiveIdentifier)
-      .on('get', (callback) => {
+      .on('get', callback => {
         this.roku
           .active()
-          .then((app) => {
-            const index = app !== null ? this.inputs.findIndex((input) => input.id == app.id) : -1;
+          .then(app => {
+            const index =
+              app !== null
+                ? this.inputs.findIndex(input => input.id == app.id)
+                : -1;
             const hapId = index + 1;
             callback(null, hapId);
           })
           .catch(callback);
       })
       .on('set', (index, callback) => {
-        const rokuId = this.inputs[index - 1].id
+        const rokuId = this.inputs[index - 1].id;
         this.roku
           .launch(rokuId)
           .then(() => callback(null))
           .catch(callback);
-      })
+      });
 
     television
       .getCharacteristic(Characteristic.ConfiguredName)
@@ -129,14 +144,14 @@ class RokuAccessory {
         perms: [Characteristic.Perms.READ]
       });
 
-    television
-      .setCharacteristic(Characteristic.SleepDiscoveryMode, Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE);
+    television.setCharacteristic(
+      Characteristic.SleepDiscoveryMode,
+      Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE
+    );
 
-    television
-      .getCharacteristic(Characteristic.DisplayOrder)
-      .setProps({
-        perms: [Characteristic.Perms.READ]
-      });
+    television.getCharacteristic(Characteristic.DisplayOrder).setProps({
+      perms: [Characteristic.Perms.READ]
+    });
 
     television
       .getCharacteristic(Characteristic.RemoteKey)
@@ -151,11 +166,15 @@ class RokuAccessory {
   }
 
   setupTelevisionSpeaker(television) {
-    if (this.info.isTv !== 'true') { return }
+    if (this.info.isTv !== 'true') {
+      return;
+    }
     const speaker = new Service.TelevisionSpeaker(`${this.name} Speaker`);
 
-    speaker
-      .setCharacteristic(Characteristic.VolumeControlType, Characteristic.VolumeControlType.RELATIVE);
+    speaker.setCharacteristic(
+      Characteristic.VolumeControlType,
+      Characteristic.VolumeControlType.RELATIVE
+    );
 
     speaker
       .getCharacteristic(Characteristic.Mute)
@@ -220,8 +239,10 @@ class RokuAccessory {
       return input;
     });
 
-    television
-      .setCharacteristic(Characteristic.DisplayOrder, identifiersTLV.toString('base64'));
+    television.setCharacteristic(
+      Characteristic.DisplayOrder,
+      identifiersTLV.toString('base64')
+    );
 
     return inputs;
   }
@@ -229,19 +250,22 @@ class RokuAccessory {
   setupInput(rokuId, name, hapId, television) {
     const input = new Service.InputSource(`${this.name} ${name}`, rokuId);
     const hdmiRegexp = /tvinput\.hdmi\d+/m;
-    const inputSourceType = hdmiRegexp.test(rokuId) ? Characteristic.InputSourceType.HDMI : Characteristic.InputSourceType.APPLICATION;
+    const inputSourceType = hdmiRegexp.test(rokuId)
+      ? Characteristic.InputSourceType.HDMI
+      : Characteristic.InputSourceType.APPLICATION;
 
     input
       .setCharacteristic(Characteristic.Identifier, hapId)
       .setCharacteristic(Characteristic.ConfiguredName, name)
-      .setCharacteristic(Characteristic.IsConfigured, Characteristic.IsConfigured.CONFIGURED)
+      .setCharacteristic(
+        Characteristic.IsConfigured,
+        Characteristic.IsConfigured.CONFIGURED
+      )
       .setCharacteristic(Characteristic.InputSourceType, inputSourceType);
 
-    input
-      .getCharacteristic(Characteristic.ConfiguredName)
-      .setProps({
-         perms: [Characteristic.Perms.READ]
-       });
+    input.getCharacteristic(Characteristic.ConfiguredName).setProps({
+      perms: [Characteristic.Perms.READ]
+    });
 
     television.addLinkedService(input);
     return input;
