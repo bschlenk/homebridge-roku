@@ -82,7 +82,7 @@ limitations I haven't come across...
 The TV cannot be powered on from a powered off state. This could be overcome by
 adding support for an ir blaster on a raspberry pi and pointing it at the TV.
 EDIT: According to some, newer Roku TV models support an "ECO" or "Fast TV Start"
-mode that allows the TV to be turned on all the time. The current "Turn on RokuPower"
+mode that allows the TV to be turned on from standby. The current "Turn on RokuPower"
 command might just work as is for those, but I have no way of testing because I have
 an older model.
 
