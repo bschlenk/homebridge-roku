@@ -4,8 +4,18 @@ const DEFAULT_VOLUME_INCREMENT = 5;
 
 const { Client, keys } = require('roku-client');
 const map = require('lodash.map');
-const tlv = require('hap-nodejs/dist/lib/util/tlv');
 const plugin = require('../package');
+
+let tlv;
+try {
+  /* eslint-disable global-require, import/no-extraneous-dependencies */
+  tlv = require('hap-nodejs/dist/lib/util/tlv');
+  /* eslint-enable global-require, import/no-extraneous-dependencies */
+} catch (err) {
+  throw new Error(
+    'Failed to load tlv helpers from hap-nodejs. Please make sure you have globally installed "homebridge" with "npm install -g homebridge"',
+  );
+}
 
 let Service;
 let Characteristic;
