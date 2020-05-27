@@ -10,7 +10,7 @@ describe.skip('homebridge-roku', () => {
   let config;
   const appMap = {
     Netflix: 1,
-    Amazon: 2
+    Amazon: 2,
   };
 
   class Characteristic {
@@ -29,7 +29,7 @@ describe.skip('homebridge-roku', () => {
       this.service = service;
       this.name = name;
       this._characteristics = {
-        on: new Characteristic()
+        on: new Characteristic(),
       };
     }
 
@@ -55,7 +55,7 @@ describe.skip('homebridge-roku', () => {
     hap: {
       Service: {
         AccessoryInformation: Service,
-        Switch: Service
+        Switch: Service,
       },
 
       Characteristic: {
@@ -63,9 +63,9 @@ describe.skip('homebridge-roku', () => {
         Model: 'model',
         Name: 'name',
         SerialNumber: 'serialNumber',
-        On: 'on'
-      }
-    }
+        On: 'on',
+      },
+    },
   };
 
   beforeEach(() => {
@@ -77,9 +77,9 @@ describe.skip('homebridge-roku', () => {
         vendorName: 'abc',
         modelName: 'def',
         userDeviceName: 'ghi',
-        serialNumber: 'jkl'
+        serialNumber: 'jkl',
       },
-      appMap
+      appMap,
     };
     accessory = new Accessory(() => {}, config);
   });
@@ -130,8 +130,8 @@ describe.skip('homebridge-roku', () => {
       expect(getMock).toHaveBeenCalledWith(null, true);
     });
 
-    it('should set the power state & send power keypress to roku', done => {
-      on._events.set(true, val => {
+    it('should set the power state & send power keypress to roku', (done) => {
+      on._events.set(true, (val) => {
         expect(val).toBeNull();
         expect(accessory.poweredOn).toBeTruthy();
         expect(accessory.roku._keys).toEqual(['Power']);
@@ -161,21 +161,21 @@ describe.skip('homebridge-roku', () => {
       expect(getMock).toHaveBeenCalledWith(null, true);
     });
 
-    it('should call mute if mute is true', done => {
-      on._events.set(true, val => {
+    it('should call mute if mute is true', (done) => {
+      on._events.set(true, (val) => {
         expect(val).toBeNull();
         expect(accessory.muted).toBeTruthy();
         expect(accessory.roku._keys).toEqual([
           'VolumeDown',
           'VolumeUp',
-          'VolumeMute'
+          'VolumeMute',
         ]);
         done();
       });
     });
 
-    it('should not call mute if mute is false', done => {
-      on._events.set(false, val => {
+    it('should not call mute if mute is false', (done) => {
+      on._events.set(false, (val) => {
         expect(val).toBeNull();
         expect(accessory.muted).toBeFalsy();
         expect(accessory.roku._keys).toEqual(['VolumeDown', 'VolumeUp']);
@@ -206,7 +206,7 @@ describe.skip('homebridge-roku', () => {
         expect(getMock).toHaveBeenCalledWith(null, false);
       });
 
-      it(`should call ${keypress} 5 times on set`, done => {
+      it(`should call ${keypress} 5 times on set`, (done) => {
         on._events.set(true, (val1, val2) => {
           expect(val1).toBeNull();
           expect(val2).toBeFalsy();
@@ -215,7 +215,7 @@ describe.skip('homebridge-roku', () => {
             keypress,
             keypress,
             keypress,
-            keypress
+            keypress,
           ]);
           done();
         });
@@ -224,7 +224,7 @@ describe.skip('homebridge-roku', () => {
   });
 
   describe('volumeIncrement setting', () => {
-    it('should call VolumeUp/Down based on the volumeIncrement setting', done => {
+    it('should call VolumeUp/Down based on the volumeIncrement setting', (done) => {
       config.volumeIncrement = 2;
       accessory = new Accessory(() => {}, config);
       const upSwitch = accessory.services[3];
@@ -238,14 +238,14 @@ describe.skip('homebridge-roku', () => {
             'VolumeUp',
             'VolumeUp',
             'VolumeDown',
-            'VolumeDown'
+            'VolumeDown',
           ]);
           done();
         });
       });
     });
 
-    it('should allow setting VolumeUp/Down independently', done => {
+    it('should allow setting VolumeUp/Down independently', (done) => {
       config.volumeIncrement = 4;
       config.volumeDecrement = 3;
       accessory = new Accessory(() => {}, config);
@@ -263,7 +263,7 @@ describe.skip('homebridge-roku', () => {
             'VolumeUp',
             'VolumeDown',
             'VolumeDown',
-            'VolumeDown'
+            'VolumeDown',
           ]);
           done();
         });
@@ -288,7 +288,7 @@ describe.skip('homebridge-roku', () => {
         expect(channelSwitch.name).toEqual(`${channel}`);
       });
 
-      it('should return false if there is no active app', done => {
+      it('should return false if there is no active app', (done) => {
         on._events.get((val1, val2) => {
           expect(val1).toBeNull();
           expect(val2).toBeFalsy();
@@ -296,7 +296,7 @@ describe.skip('homebridge-roku', () => {
         });
       });
 
-      it('should return false if the app is not active', done => {
+      it('should return false if the app is not active', (done) => {
         accessory.roku._activeApp = channelId + 1;
         on._events.get((val1, val2) => {
           expect(val1).toBeNull();
@@ -305,7 +305,7 @@ describe.skip('homebridge-roku', () => {
         });
       });
 
-      it('should return true if the app active', done => {
+      it('should return true if the app active', (done) => {
         accessory.roku._activeApp = channelId;
         on._events.get((val1, val2) => {
           expect(val1).toBeNull();
@@ -314,7 +314,7 @@ describe.skip('homebridge-roku', () => {
         });
       });
 
-      it('should launch the given channel', done => {
+      it('should launch the given channel', (done) => {
         accessory.roku._activeApp = channelId;
         on._events.set(true, (val1, val2) => {
           expect(accessory.roku._lastLaunched).toEqual(channelId);
@@ -324,7 +324,7 @@ describe.skip('homebridge-roku', () => {
         });
       });
 
-      it('should go home if toggling off', done => {
+      it('should go home if toggling off', (done) => {
         on._events.set(false, (val1, val2) => {
           expect(accessory.roku._keys).toEqual(['Home']);
           expect(val1).toBeNull();

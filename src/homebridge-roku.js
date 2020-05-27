@@ -4,7 +4,7 @@ const DEFAULT_VOLUME_INCREMENT = 5;
 
 const { Client, keys } = require('roku-client');
 const map = require('lodash.map');
-const tlv = require('hap-nodejs/lib/util/tlv');
+const tlv = require('hap-nodejs/dist/lib/util/tlv');
 const plugin = require('../package');
 
 let Service;
@@ -12,7 +12,7 @@ let Characteristic;
 
 const DisplayOrderTypes = {
   ARRAY_ELEMENT_START: 0x1,
-  ARRAY_ELEMENT_END: 0x0
+  ARRAY_ELEMENT_END: 0x0,
 };
 
 class RokuAccessory {
@@ -47,7 +47,7 @@ class RokuAccessory {
       [Characteristic.RemoteKey.BACK]: keys.BACK,
       [Characteristic.RemoteKey.EXIT]: keys.HOME,
       [Characteristic.RemoteKey.PLAY_PAUSE]: keys.PLAY,
-      [Characteristic.RemoteKey.INFORMATION]: keys.INFO
+      [Characteristic.RemoteKey.INFORMATION]: keys.INFO,
     };
 
     this.setup();
@@ -67,17 +67,17 @@ class RokuAccessory {
     accessoryInfo
       .setCharacteristic(
         Characteristic.Manufacturer,
-        this.info.vendorName || 'Roku, Inc.'
+        this.info.vendorName || 'Roku, Inc.',
       )
       .setCharacteristic(
         Characteristic.Name,
-        this.info.friendlyModelName || 'Roku'
+        this.info.friendlyModelName || 'Roku',
       )
       .setCharacteristic(Characteristic.Model, this.info.modelName)
       .setCharacteristic(Characteristic.SerialNumber, this.info.serialNumber)
       .setCharacteristic(
         Characteristic.FirmwareRevision,
-        this.info.softwareVersion || plugin.version
+        this.info.softwareVersion || plugin.version,
       );
 
     return accessoryInfo;
@@ -88,10 +88,10 @@ class RokuAccessory {
 
     television
       .getCharacteristic(Characteristic.Active)
-      .on('get', callback => {
+      .on('get', (callback) => {
         this.roku
           .info()
-          .then(info => {
+          .then((info) => {
             const value =
               info.powerMode === 'PowerOn'
                 ? Characteristic.Active.ACTIVE
@@ -116,13 +116,13 @@ class RokuAccessory {
 
     television
       .getCharacteristic(Characteristic.ActiveIdentifier)
-      .on('get', callback => {
+      .on('get', (callback) => {
         this.roku
           .active()
-          .then(app => {
+          .then((app) => {
             const index =
               app !== null
-                ? this.inputs.findIndex(input => input.id == app.id)
+                ? this.inputs.findIndex((input) => input.id == app.id)
                 : -1;
             const hapId = index + 1;
             callback(null, hapId);
@@ -141,16 +141,16 @@ class RokuAccessory {
       .getCharacteristic(Characteristic.ConfiguredName)
       .setValue(this.info.userDeviceName)
       .setProps({
-        perms: [Characteristic.Perms.READ]
+        perms: [Characteristic.Perms.READ],
       });
 
     television.setCharacteristic(
       Characteristic.SleepDiscoveryMode,
-      Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE
+      Characteristic.SleepDiscoveryMode.ALWAYS_DISCOVERABLE,
     );
 
     television.getCharacteristic(Characteristic.DisplayOrder).setProps({
-      perms: [Characteristic.Perms.READ]
+      perms: [Characteristic.Perms.READ],
     });
 
     television
@@ -173,12 +173,12 @@ class RokuAccessory {
 
     speaker.setCharacteristic(
       Characteristic.VolumeControlType,
-      Characteristic.VolumeControlType.RELATIVE
+      Characteristic.VolumeControlType.RELATIVE,
     );
 
     speaker
       .getCharacteristic(Characteristic.Mute)
-      .on('get', callback => callback(null, this.muted))
+      .on('get', (callback) => callback(null, this.muted))
       .on('set', (value, callback) => {
         this.muted = value;
         this.roku
@@ -187,7 +187,7 @@ class RokuAccessory {
           // the TV if the current state is not known
           .volumeDown()
           .volumeUp()
-          .exec(cmd => this.muted && cmd.volumeMute())
+          .exec((cmd) => this.muted && cmd.volumeMute())
           .send()
           .then(() => callback(null))
           .catch(callback);
@@ -225,7 +225,7 @@ class RokuAccessory {
       if (identifiersTLV.length !== 0) {
         identifiersTLV = Buffer.concat([
           identifiersTLV,
-          tlv.encode(DisplayOrderTypes.ARRAY_ELEMENT_END, Buffer.alloc(0))
+          tlv.encode(DisplayOrderTypes.ARRAY_ELEMENT_END, Buffer.alloc(0)),
         ]);
       }
 
@@ -233,7 +233,7 @@ class RokuAccessory {
       element.writeUInt32LE(hapId, 0);
       identifiersTLV = Buffer.concat([
         identifiersTLV,
-        tlv.encode(DisplayOrderTypes.ARRAY_ELEMENT_START, element)
+        tlv.encode(DisplayOrderTypes.ARRAY_ELEMENT_START, element),
       ]);
 
       return input;
@@ -241,7 +241,7 @@ class RokuAccessory {
 
     television.setCharacteristic(
       Characteristic.DisplayOrder,
-      identifiersTLV.toString('base64')
+      identifiersTLV.toString('base64'),
     );
 
     return inputs;
@@ -259,12 +259,12 @@ class RokuAccessory {
       .setCharacteristic(Characteristic.ConfiguredName, name)
       .setCharacteristic(
         Characteristic.IsConfigured,
-        Characteristic.IsConfigured.CONFIGURED
+        Characteristic.IsConfigured.CONFIGURED,
       )
       .setCharacteristic(Characteristic.InputSourceType, inputSourceType);
 
     input.getCharacteristic(Characteristic.ConfiguredName).setProps({
-      perms: [Characteristic.Perms.READ]
+      perms: [Characteristic.Perms.READ],
     });
 
     television.addLinkedService(input);
@@ -276,7 +276,7 @@ class RokuAccessory {
   }
 }
 
-module.exports = homebridge => {
+module.exports = (homebridge) => {
   ({ Service, Characteristic } = homebridge.hap);
 
   homebridge.registerAccessory('homebridge-roku', 'Roku', RokuAccessory);

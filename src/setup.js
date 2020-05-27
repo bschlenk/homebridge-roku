@@ -15,18 +15,18 @@ const HOMEBRIDGE_CONFIG = path.join(os.homedir(), '.homebridge', 'config.json');
  */
 function generateConfig() {
   return Client.discover()
-    .then(device => {
+    .then((device) => {
       const { ip } = device;
       const inputs = [];
       return device
         .apps()
-        .then(apps =>
-          apps.forEach(app => {
+        .then((apps) =>
+          apps.forEach((app) => {
             inputs.push({ id: app.id, name: app.name });
-          })
+          }),
         )
         .then(() => device.info())
-        .then(info => ({ ip, inputs, info }));
+        .then((info) => ({ ip, inputs, info }));
     })
     .then(({ ip, inputs, info }) => ({
       accessories: [
@@ -35,9 +35,9 @@ function generateConfig() {
           info,
           inputs,
           name: 'Roku',
-          accessory: 'Roku'
-        }
-      ]
+          accessory: 'Roku',
+        },
+      ],
     }));
 }
 
@@ -49,11 +49,11 @@ function generateConfig() {
  * @return {any[]} The new merged array.
  */
 function arrayMerge(dest, source) {
-  const merged = dest.map(destEl => {
+  const merged = dest.map((destEl) => {
     if (!Object.prototype.hasOwnProperty.call(destEl, 'name')) {
       return destEl;
     }
-    const idx = source.findIndex(sourceEl => destEl.name === sourceEl.name);
+    const idx = source.findIndex((sourceEl) => destEl.name === sourceEl.name);
     if (idx >= 0) {
       const [match] = source.splice(idx, 1);
       return deepmerge(destEl, match);
@@ -100,5 +100,5 @@ module.exports = {
   generateConfig,
   mergeConfigs,
   mergeConfigWithMaster,
-  HOMEBRIDGE_CONFIG
+  HOMEBRIDGE_CONFIG,
 };
