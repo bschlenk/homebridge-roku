@@ -12,4 +12,16 @@ module.exports = {
     'no-plusplus': 'off', // I wish python had this, don't take it away from js
     strict: 'off',
   },
+
+  overrides: [
+    {
+      files: ['*.test.js'],
+      env: {
+        jest: true,
+      },
+      rules: {
+        'no-new': 'off',
+      },
+    },
+  ],
 };

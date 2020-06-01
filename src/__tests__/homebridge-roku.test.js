@@ -1,5 +1,3 @@
-/* eslint-env jest */
-
 'use strict';
 
 const hap = require('hap-nodejs');
@@ -104,7 +102,6 @@ describe('homebridge-roku', () => {
 
   it('should fail if no ip address is in config', () => {
     expect(() => {
-      // eslint-disable-next-line
       new Accessory(() => {}, { name: 'acc' });
     }).toThrow('An ip address is required for plugin acc');
   });
