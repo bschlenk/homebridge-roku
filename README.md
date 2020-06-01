@@ -58,9 +58,19 @@ accessory section of the config. The setup script sets it to `Roku`, but it can
 be set to whatever you want it to be. The invocations listed above would then
 use the name configured instead of `Roku`.
 
+### inputs
+
+The list of inputs that your TV supports is generated when you run the
+`homebridge-roku-config` setup. When you add/remove inputs on your TV, you may
+need to re-run `homebridge-roku-config` to get them to show up in homekit. If
+you would like to hide certain inputs, such as FandangoNOW or HDMI ARC, you can
+remove them from the list of inputs in your config.
+
+### volumeIncrement / volumeDecrement
+
 The amount that volume will be increased or decreased per volume up/down command
 can be set in the config. By default, both up and down will be done in
-increments of 5. To change this, there are two settings: `volumeIncrement` and
+increments of 1. To change this, there are two settings: `volumeIncrement` and
 `volumeDecrement`. If only `volumeIncrement` is set, then both volume up and
 down will change by the same amount.
 
