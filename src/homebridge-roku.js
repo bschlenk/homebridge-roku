@@ -1,7 +1,6 @@
 'use strict';
 
 const { Client, keys } = require('roku-client');
-const map = require('lodash.map');
 const plugin = require('../package');
 
 let tlv;
@@ -135,7 +134,7 @@ class RokuAccessory {
           .then((app) => {
             const index =
               app !== null
-                ? this.inputs.findIndex((input) => input.id == app.id)
+                ? this.inputs.findIndex((input) => input.id === app.id)
                 : -1;
             const hapId = index + 1;
             callback(null, hapId);
@@ -178,10 +177,11 @@ class RokuAccessory {
     return television;
   }
 
-  setupTelevisionSpeaker(television) {
+  setupTelevisionSpeaker() {
     if (this.info.isTv !== 'true') {
-      return;
+      return null;
     }
+
     const speaker = new Service.TelevisionSpeaker(`${this.name} Speaker`);
 
     speaker.setCharacteristic(
@@ -209,7 +209,7 @@ class RokuAccessory {
     speaker
       .getCharacteristic(Characteristic.VolumeSelector)
       .on('set', (newValue, callback) => {
-        if (newValue == Characteristic.VolumeSelector.INCREMENT) {
+        if (newValue === Characteristic.VolumeSelector.INCREMENT) {
           this.roku
             .command()
             .keypress(keys.VOLUME_UP, this.volumeIncrement)
@@ -230,7 +230,7 @@ class RokuAccessory {
   }
 
   setupInputs(television) {
-    var identifiersTLV = Buffer.alloc(0);
+    let identifiersTLV = Buffer.alloc(0);
     const inputs = this.inputs.map((config, index) => {
       const hapId = index + 1;
       const input = this.setupInput(config.id, config.name, hapId, television);
