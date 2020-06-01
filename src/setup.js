@@ -20,11 +20,11 @@ async function generateConfig() {
   return {
     accessories: [
       {
-        ip: client.ip,
-        info,
-        inputs,
         name: 'Roku',
         accessory: 'Roku',
+        ip: client.ip,
+        inputs,
+        info,
       },
     ],
   };
