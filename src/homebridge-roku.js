@@ -1,10 +1,9 @@
 'use strict';
 
 const { Client, keys } = require('roku-client');
-// eslint-disable-next-line import/no-extraneous-dependencies
-const { encode, writeUInt32 } = require('hap-nodejs');
 const plugin = require('../package');
 
+let hap;
 let Service;
 let Characteristic;
 
@@ -229,14 +228,14 @@ class RokuAccessory {
       if (identifiersTLV.length !== 0) {
         identifiersTLV = Buffer.concat([
           identifiersTLV,
-          encode(DisplayOrderTypes.ARRAY_ELEMENT_END, Buffer.alloc(0)),
+          hap.encode(DisplayOrderTypes.ARRAY_ELEMENT_END, Buffer.alloc(0)),
         ]);
       }
 
-      const element = writeUInt32(hapId);
+      const element = hap.writeUInt32(hapId);
       identifiersTLV = Buffer.concat([
         identifiersTLV,
-        encode(DisplayOrderTypes.ARRAY_ELEMENT_START, element),
+        hap.encode(DisplayOrderTypes.ARRAY_ELEMENT_START, element),
       ]);
 
       return input;
@@ -280,6 +279,7 @@ class RokuAccessory {
 }
 
 module.exports = (homebridge) => {
+  hap = homebridge.hap;
   ({ Service, Characteristic } = homebridge.hap);
 
   homebridge.registerAccessory('homebridge-roku', 'Roku', RokuAccessory);
