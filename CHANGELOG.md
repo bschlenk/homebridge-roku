@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.1](https://github.com/bschlenk/homebridge-roku/compare/v3.0.0...v3.0.1) (2020-06-01)
+
+
+### Docs
+
+* update npm badge in README ([de02926](https://github.com/bschlenk/homebridge-roku/commit/de029267bfe05750ab787e977fc2c18bb2a22ae8))
+
+
 ## [3.0.0](https://github.com/bschlenk/homebridge-roku/compare/v3.0.0-alpha.1...v3.0.0) (2020-06-01)
 
 
