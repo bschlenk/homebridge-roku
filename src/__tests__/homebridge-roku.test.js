@@ -2,24 +2,37 @@
 
 'use strict';
 
+const hap = require('hap-nodejs');
 const setupService = require('../homebridge-roku');
 
-describe.skip('homebridge-roku', () => {
+describe('homebridge-roku', () => {
   let Accessory;
   let accessory;
   let config;
-  const appMap = {
-    Netflix: 1,
-    Amazon: 2,
-  };
+  const inputs = [
+    { id: 1, name: 'Netflix' },
+    { id: 2, name: 'Amazon' },
+  ];
 
   class Characteristic {
     constructor() {
       this._events = {};
+      this._value = undefined;
+      this._props = undefined;
     }
 
     on(key, value) {
       this._events[key] = value;
+      return this;
+    }
+
+    setValue(value) {
+      this._value = value;
+      return this;
+    }
+
+    setProps(props) {
+      this._props = props;
       return this;
     }
   }
@@ -28,21 +41,26 @@ describe.skip('homebridge-roku', () => {
     constructor(service, name) {
       this.service = service;
       this.name = name;
-      this._characteristics = {
-        on: new Characteristic(),
-      };
+      this._characteristics = new Map();
+      this._linkedServices = [];
     }
 
     setCharacteristic(key, value) {
-      this._characteristics[key] = value;
+      this.getCharacteristic(key).setValue(value);
       return this;
     }
 
     getCharacteristic(key) {
-      return this._characteristics[key];
+      let characteristic = this._characteristics.get(key);
+      if (!characteristic) {
+        characteristic = new Characteristic();
+        this._characteristics.set(key, characteristic);
+      }
+      return characteristic;
     }
 
-    on() {
+    addLinkedService(service) {
+      this._linkedServices.push(service);
       return this;
     }
   }
@@ -56,15 +74,14 @@ describe.skip('homebridge-roku', () => {
       Service: {
         AccessoryInformation: Service,
         Switch: Service,
+        Television: Service,
+        InputSource: Service,
       },
 
-      Characteristic: {
-        Manufacturer: 'manufacturer',
-        Model: 'model',
-        Name: 'name',
-        SerialNumber: 'serialNumber',
-        On: 'on',
-      },
+      Characteristic: hap.Characteristic,
+
+      encode: hap.encode,
+      writeUInt32: hap.writeUInt32,
     },
   };
 
@@ -78,8 +95,9 @@ describe.skip('homebridge-roku', () => {
         modelName: 'def',
         userDeviceName: 'ghi',
         serialNumber: 'jkl',
+        friendlyModelName: 'mno',
       },
-      appMap,
+      inputs,
     };
     accessory = new Accessory(() => {}, config);
   });
@@ -93,18 +111,19 @@ describe.skip('homebridge-roku', () => {
 
   it('should set up accessory info', () => {
     const accessoryInfo = accessory.services[0];
-    expect(accessoryInfo._characteristics.manufacturer).toEqual('abc');
-    expect(accessoryInfo._characteristics.model).toEqual('def');
-    expect(accessoryInfo._characteristics.name).toEqual('ghi');
-    expect(accessoryInfo._characteristics.serialNumber).toEqual('jkl');
+    const getCh = (ch) => accessoryInfo.getCharacteristic(ch)._value;
+    expect(getCh(hap.Characteristic.Manufacturer)).toEqual('abc');
+    expect(getCh(hap.Characteristic.Model)).toEqual('def');
+    expect(getCh(hap.Characteristic.Name)).toEqual('mno');
+    expect(getCh(hap.Characteristic.SerialNumber)).toEqual('jkl');
   });
 
   it('should return the available services', () => {
     const services = accessory.getServices();
-    expect(services.length).toEqual(7);
+    expect(services.length).toEqual(4);
   });
 
-  describe('PowerSwitch', () => {
+  describe.skip('PowerSwitch', () => {
     let powerSwitch;
     let on;
 
@@ -140,7 +159,7 @@ describe.skip('homebridge-roku', () => {
     });
   });
 
-  describe('MuteSwitch', () => {
+  describe.skip('MuteSwitch', () => {
     let muteSwitch;
     let on;
 
@@ -185,7 +204,7 @@ describe.skip('homebridge-roku', () => {
   });
 
   ['VolumeUp', 'VolumeDown'].forEach((keypress, i) => {
-    describe(keypress, () => {
+    describe.skip(keypress, () => {
       let keySwitch;
       let on;
 
@@ -223,7 +242,7 @@ describe.skip('homebridge-roku', () => {
     });
   });
 
-  describe('volumeIncrement setting', () => {
+  describe.skip('volumeIncrement setting', () => {
     it('should call VolumeUp/Down based on the volumeIncrement setting', (done) => {
       config.volumeIncrement = 2;
       accessory = new Accessory(() => {}, config);
@@ -271,9 +290,9 @@ describe.skip('homebridge-roku', () => {
     });
   });
 
-  Object.keys(appMap).forEach((channel, i) => {
-    describe(`Channel ${channel}`, () => {
-      const channelId = appMap[channel];
+  inputs.forEach((input, i) => {
+    describe.skip(`Channel ${input.name}`, () => {
+      const channelId = input.id;
       let channelSwitch;
       let on;
 
@@ -284,8 +303,8 @@ describe.skip('homebridge-roku', () => {
       });
 
       it('should have proper service and name', () => {
-        expect(channelSwitch.service).toEqual(`Roku ${channel}`);
-        expect(channelSwitch.name).toEqual(`${channel}`);
+        expect(channelSwitch.service).toEqual(`Roku ${input.name}`);
+        expect(channelSwitch.name).toEqual(`${input.name}`);
       });
 
       it('should return false if there is no active app', (done) => {
