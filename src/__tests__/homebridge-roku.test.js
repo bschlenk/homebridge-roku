@@ -1,12 +1,15 @@
 'use strict';
 
 const hap = require('hap-nodejs');
+const { keys } = require('roku-client');
 const setupService = require('../homebridge-roku');
 
 describe('homebridge-roku', () => {
   let Accessory;
   let accessory;
   let config;
+  const log = () => {};
+  const ip = '192.168.1.25';
   const inputs = [
     { id: 1, name: 'Netflix' },
     { id: 2, name: 'Amazon' },
@@ -87,7 +90,7 @@ describe('homebridge-roku', () => {
     setupService(homebridge);
     config = {
       name: 'Roku',
-      ip: '192.168.1.25',
+      ip,
       info: {
         vendorName: 'abc',
         modelName: 'def',
@@ -97,13 +100,36 @@ describe('homebridge-roku', () => {
       },
       inputs,
     };
-    accessory = new Accessory(() => {}, config);
+    accessory = new Accessory(log, config);
   });
 
   it('should fail if no ip address is in config', () => {
     expect(() => {
-      new Accessory(() => {}, { name: 'acc' });
+      new Accessory(log, { name: 'acc' });
     }).toThrow('An ip address is required for plugin acc');
+  });
+
+  it('should fail if infoButtonOverride is invalid', () => {
+    expect(() => {
+      new Accessory(log, {
+        name: 'acc',
+        ip,
+        infoButtonOverride: 'butts',
+      });
+    }).toThrow(/^Invalid value "butts" for infoButtonOverride/);
+  });
+
+  it('should allow overriding the info button', () => {
+    const acc = new Accessory(log, {
+      name: 'acc',
+      ip,
+      info: {},
+      inputs: [],
+      infoButtonOverride: 'HOME',
+    });
+    expect(acc.buttons[hap.Characteristic.RemoteKey.INFORMATION]).toEqual(
+      keys.HOME,
+    );
   });
 
   it('should set up accessory info', () => {

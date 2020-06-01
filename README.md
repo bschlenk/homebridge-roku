@@ -64,6 +64,16 @@ increments of 5. To change this, there are two settings: `volumeIncrement` and
 `volumeDecrement`. If only `volumeIncrement` is set, then both volume up and
 down will change by the same amount.
 
+### infoButtonOverride
+
+The iOS control center remote isn't that great - it only gives you access to the
+arrows, `ok`, `play/pause`, `back`, and `info`. To make it a little more useful, you can
+override the functionality of the `info` button to whatever key you want. For
+example, to make it behave as the `home` button, add this to your homebridge
+config for your Roku accessory: `"infoButtonOverride": "HOME"`. The list of
+possible keys can be found
+[here](https://github.com/bschlenk/node-roku-client/blob/master/lib/keys.ts).
+
 ## Helping Out
 
 There are many versions of Roku devices, each with a different feature set. In

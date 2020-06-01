@@ -33,6 +33,21 @@ class RokuAccessory {
 
     this.muted = false;
 
+    let infoButton = keys.INFO;
+    if (config.infoButtonOverride) {
+      const override = keys[config.infoButtonOverride];
+      if (!override) {
+        throw new Error(
+          `Invalid value "${
+            config.infoButtonOverride
+          }" for infoButtonOverride, must be one of ${Object.keys(keys).join(
+            ', ',
+          )}`,
+        );
+      }
+      infoButton = override;
+    }
+
     this.buttons = {
       [Characteristic.RemoteKey.REWIND]: keys.REVERSE,
       [Characteristic.RemoteKey.FAST_FORWARD]: keys.FORWARD,
@@ -46,7 +61,7 @@ class RokuAccessory {
       [Characteristic.RemoteKey.BACK]: keys.BACK,
       [Characteristic.RemoteKey.EXIT]: keys.HOME,
       [Characteristic.RemoteKey.PLAY_PAUSE]: keys.PLAY,
-      [Characteristic.RemoteKey.INFORMATION]: keys.INFO,
+      [Characteristic.RemoteKey.INFORMATION]: infoButton,
     };
 
     this.setup();
