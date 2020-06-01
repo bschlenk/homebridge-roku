@@ -122,6 +122,6 @@ requests are welcome :)
   config generator doesn't need to be run when new channels are installed.
 - Document the different Siri invocations
 
-[npm]: https://img.shields.io/npm/v/homebridge-roku/next.svg?logo=npm
-[npm-url]: https://npmjs.com/package/homebridge-roku/v/next
+[npm]: https://img.shields.io/npm/v/homebridge-roku.svg?logo=npm
+[npm-url]: https://www.npmjs.com/package/homebridge-roku
 [homebridge-install]: https://github.com/homebridge/homebridge#installation
