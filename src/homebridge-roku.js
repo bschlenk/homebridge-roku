@@ -1,18 +1,9 @@
 'use strict';
 
 const { Client, keys } = require('roku-client');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const { encode, writeUInt32 } = require('hap-nodejs');
 const plugin = require('../package');
-
-let tlv;
-try {
-  /* eslint-disable global-require, import/no-extraneous-dependencies */
-  tlv = require('hap-nodejs/dist/lib/util/tlv');
-  /* eslint-enable global-require, import/no-extraneous-dependencies */
-} catch (err) {
-  throw new Error(
-    'Failed to load tlv helpers from hap-nodejs. Please make sure you have globally installed "homebridge" with "npm install -g homebridge"',
-  );
-}
 
 let Service;
 let Characteristic;
@@ -238,15 +229,14 @@ class RokuAccessory {
       if (identifiersTLV.length !== 0) {
         identifiersTLV = Buffer.concat([
           identifiersTLV,
-          tlv.encode(DisplayOrderTypes.ARRAY_ELEMENT_END, Buffer.alloc(0)),
+          encode(DisplayOrderTypes.ARRAY_ELEMENT_END, Buffer.alloc(0)),
         ]);
       }
 
-      var element = Buffer.alloc(4);
-      element.writeUInt32LE(hapId, 0);
+      const element = writeUInt32(hapId);
       identifiersTLV = Buffer.concat([
         identifiersTLV,
-        tlv.encode(DisplayOrderTypes.ARRAY_ELEMENT_START, element),
+        encode(DisplayOrderTypes.ARRAY_ELEMENT_START, element),
       ]);
 
       return input;
