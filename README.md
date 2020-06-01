@@ -114,17 +114,23 @@ requests are welcome :)
 
 ## Migrating Major Versions
 
-I'm trying to follow strict semver, so major version bumps indicate a breaking
-change.
-
 ### 2.x.x -> 3.x.x
 
-Currently in alpha, this release focuses on supporting iOS 12.2's new
-television homekit service.
+This release focuses on supporting iOS 12.2's new television homekit service.
 
 The `appMap` field of the config file has been renamed `inputs` and is
 now an array of objects. This change is to support the television
-service, which requires inputs have stable, sequential ids.
+service, which requires inputs have stable, sequential ids. Running
+`homebridge-roku-config --merge` after upgrading to version 3 should add the new
+`inputs` field. You should be able to remove the now unused `appMap` section
+from your config.
+
+This plugin now requires a minimum of 
+[Homebridge
+v1.0.0](https://github.com/homebridge/homebridge/releases/tag/1.0.0), and NodeJS
+v10.17.0. Please refer to the [homebridge installation 
+guide][homebridge-install] for instructions on installing a supported version of
+NodeJS on your platform.
 
 ### 1.x.x -> 2.x.x
 
@@ -139,3 +145,4 @@ same `name` field, so running this once should be enough to upgrade to `2.x.x`.
 
 [npm]: https://img.shields.io/npm/v/homebridge-roku/next.svg?logo=npm
 [npm-url]: https://npmjs.com/package/homebridge-roku/v/next
+[homebridge-install]: https://github.com/homebridge/homebridge#installation
