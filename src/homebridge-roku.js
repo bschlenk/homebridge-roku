@@ -1,7 +1,5 @@
 'use strict';
 
-const DEFAULT_VOLUME_INCREMENT = 5;
-
 const { Client, keys } = require('roku-client');
 const map = require('lodash.map');
 const plugin = require('../package');
@@ -19,6 +17,8 @@ try {
 
 let Service;
 let Characteristic;
+
+const DEFAULT_VOLUME_INCREMENT = 1;
 
 const DisplayOrderTypes = {
   ARRAY_ELEMENT_START: 0x1,
