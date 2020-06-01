@@ -8,14 +8,13 @@ controlling 3rd party devices through HomeKit.
 
 ## Alpha Version
 
-You are reading the documentation for homebridge-roku alpha. This
-version **only** works with iOS 12.2 and above. Visit
-[beta.apple.com](https://beta.apple.com/sp/betaprogram/) for
-instructions on iOS 12.2 beta.
+You are reading the documentation for homebridge-roku alpha. This version
+**only** works with iOS 12.2 and above. Visit
+[beta.apple.com](https://beta.apple.com/sp/betaprogram/) for instructions on iOS
+12.2 beta.
 
-Visit the
-[master](https://github.com/bschlenk/homebridge-roku/tree/master) branch
-for the latest stable version.
+Visit the [master](https://github.com/bschlenk/homebridge-roku/tree/master)
+branch for the latest stable version.
 
 ## Installation
 
@@ -25,9 +24,9 @@ for the latest stable version.
 
 ### Additional Installation Info
 
-A config file must exist at `~/.homebridge/config.json`. See the [sample config
-file](https://github.com/nfarina/homebridge/blob/master/config-sample.json) for
-an example.
+A config file must exist at `~/.homebridge/config.json`. See the
+[sample config file](https://github.com/nfarina/homebridge/blob/master/config-sample.json)
+for an example.
 
 You can run `homebridge-roku-config` by itself to print out the homebride-roku
 config and manually add it to `~/.homebridge/config.json` if you prefer.
@@ -48,8 +47,8 @@ The built in iOS remote needs to be enabled to use it:
 
 This will allow you to access the remote from Control Center.
 
-As iOS 12.2 is still in beta, the available Siri commands are still
-changing and I haven't had time to document them.
+As iOS 12.2 is still in beta, the available Siri commands are still changing and
+I haven't had time to document them.
 
 ## Configuration
 
@@ -77,11 +76,11 @@ down will change by the same amount.
 ### infoButtonOverride
 
 The iOS control center remote isn't that great - it only gives you access to the
-arrows, `ok`, `play/pause`, `back`, and `info`. To make it a little more useful, you can
-override the functionality of the `info` button to whatever key you want. For
-example, to make it behave as the `home` button, add this to your homebridge
-config for your Roku accessory: `"infoButtonOverride": "HOME"`. The list of
-possible keys can be found
+arrows, `ok`, `play/pause`, `back`, and `info`. To make it a little more useful,
+you can override the functionality of the `info` button to whatever key you
+want. For example, to make it behave as the `home` button, add this to your
+homebridge config for your Roku accessory: `"infoButtonOverride": "HOME"`. The
+list of possible keys can be found
 [here](https://github.com/bschlenk/node-roku-client/blob/master/lib/keys.ts).
 
 ## Helping Out
@@ -89,22 +88,22 @@ possible keys can be found
 There are many versions of Roku devices, each with a different feature set. In
 order to support features across all these devices, it would be helpful to see
 what config values each one exposes. If you would like to help out, feel free to
-add your config to [this
-issue](https://github.com/bschlenk/homebridge-roku/issues/9). You can replace
-any fields you think are private with "\<redacted\>".
+add your config to
+[this issue](https://github.com/bschlenk/homebridge-roku/issues/9). You can
+replace any fields you think are private with "\<redacted\>".
 
 ## Limitations
 
-I have only tested this with a [Roku
-TV](https://www.amazon.com/gp/product/B00SG473NO), so there may be more
+I have only tested this with a
+[Roku TV](https://www.amazon.com/gp/product/B00SG473NO), so there may be more
 limitations I haven't come across...
 
 The TV cannot be powered on from a powered off state. This could be overcome by
 adding support for an ir blaster on a raspberry pi and pointing it at the TV.
-EDIT: According to some, newer Roku TV models support an "ECO" or "Fast TV Start"
-mode that allows the TV to be turned on from standby. The current "Turn on RokuPower"
-command might just work as is for those, but I have no way of testing because I have
-an older model.
+EDIT: According to some, newer Roku TV models support an "ECO" or "Fast TV
+Start" mode that allows the TV to be turned on from standby. The current "Turn
+on RokuPower" command might just work as is for those, but I have no way of
+testing because I have an older model.
 
 The current volume level can't be queried, so you can't ask for the volume to be
 set to a specific value, only relative values can be used. This could be
@@ -118,17 +117,16 @@ requests are welcome :)
 
 This release focuses on supporting iOS 12.2's new television homekit service.
 
-The `appMap` field of the config file has been renamed `inputs` and is
-now an array of objects. This change is to support the television
-service, which requires inputs have stable, sequential ids. Running
+The `appMap` field of the config file has been renamed `inputs` and is now an
+array of objects. This change is to support the television service, which
+requires inputs have stable, sequential ids. Running
 `homebridge-roku-config --merge` after upgrading to version 3 should add the new
 `inputs` field. You should be able to remove the now unused `appMap` section
 from your config.
 
-This plugin now requires a minimum of 
-[Homebridge
-v1.0.0](https://github.com/homebridge/homebridge/releases/tag/1.0.0), and NodeJS
-v10.17.0. Please refer to the [homebridge installation 
+This plugin now requires a minimum of
+[Homebridge v1.0.0](https://github.com/homebridge/homebridge/releases/tag/1.0.0),
+and NodeJS v10.17.0. Please refer to the [homebridge installation
 guide][homebridge-install] for instructions on installing a supported version of
 NodeJS on your platform.
 
