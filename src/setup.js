@@ -13,32 +13,21 @@ const HOMEBRIDGE_CONFIG = path.join(os.homedir(), '.homebridge', 'config.json');
  * roku for information and installed apps.
  * @return {Promise<Object>}
  */
-function generateConfig() {
-  return Client.discover()
-    .then((device) => {
-      const { ip } = device;
-      const inputs = [];
-      return device
-        .apps()
-        .then((apps) =>
-          apps.forEach((app) => {
-            inputs.push({ id: app.id, name: app.name });
-          }),
-        )
-        .then(() => device.info())
-        .then((info) => ({ ip, inputs, info }));
-    })
-    .then(({ ip, inputs, info }) => ({
-      accessories: [
-        {
-          ip,
-          info,
-          inputs,
-          name: 'Roku',
-          accessory: 'Roku',
-        },
-      ],
-    }));
+async function generateConfig() {
+  const client = await Client.discover();
+  const [info, apps] = await Promise.all([client.info(), client.apps()]);
+  const inputs = apps.map((app) => ({ id: app.id, name: app.name }));
+  return {
+    accessories: [
+      {
+        ip: client.ip,
+        info,
+        inputs,
+        name: 'Roku',
+        accessory: 'Roku',
+      },
+    ],
+  };
 }
 
 /**
@@ -50,7 +39,7 @@ function generateConfig() {
  */
 function arrayMerge(dest, source) {
   const merged = dest.map((destEl) => {
-    if (!Object.prototype.hasOwnProperty.call(destEl, 'name')) {
+    if (!('name' in destEl)) {
       return destEl;
     }
     const idx = source.findIndex((sourceEl) => destEl.name === sourceEl.name);
@@ -60,7 +49,7 @@ function arrayMerge(dest, source) {
     }
     return destEl;
   });
-  return merged.concat(source);
+  return [...merged, ...source];
 }
 
 /**
@@ -74,7 +63,7 @@ function arrayMerge(dest, source) {
 function mergeConfigs(configAName, configBName) {
   function readConfig(name) {
     if (typeof name === 'string') {
-      return JSON.parse(fs.readFileSync(name).toString('utf-8'));
+      return JSON.parse(fs.readFileSync(name, 'utf-8'));
     }
     return name;
   }

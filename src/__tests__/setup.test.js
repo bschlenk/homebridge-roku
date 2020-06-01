@@ -30,24 +30,23 @@ describe('setup', () => {
       );
     });
 
-    it('should return the generated config', () =>
-      generateConfig().then((config) => {
-        expect(config).toBeDefined();
-        const { accessories } = config;
-        expect(accessories).toBeInstanceOf(Array);
-        expect(accessories.length).toEqual(1);
-        const accessory = accessories[0];
-        expect(accessory).toEqual({
-          accessory: 'Roku',
-          name: 'Roku',
-          ip: IP,
-          inputs: [
-            { id: '1234', name: 'Netflix' },
-            { id: '4567', name: 'Spotify' },
-          ],
-          info: { manufacturer: 'TCL', serialNumber: '12345' },
-        });
-      }));
+    it('should return the generated config', async () => {
+      const config = await generateConfig();
+      expect(config).toEqual({
+        accessories: [
+          {
+            accessory: 'Roku',
+            name: 'Roku',
+            ip: IP,
+            inputs: [
+              { id: '1234', name: 'Netflix' },
+              { id: '4567', name: 'Spotify' },
+            ],
+            info: { manufacturer: 'TCL', serialNumber: '12345' },
+          },
+        ],
+      });
+    });
   });
 
   describe('#mergeConfigWithMaster()', () => {
