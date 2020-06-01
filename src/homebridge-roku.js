@@ -67,7 +67,10 @@ class RokuAccessory {
     this.services.push(this.setupAccessoryInfo());
     const television = this.setupTelevision();
     this.services.push(television);
-    this.services.push(this.setupTelevisionSpeaker(television));
+    const speaker = this.setupTelevisionSpeaker();
+    if (speaker) {
+      this.services.push(speaker);
+    }
     this.services.push(...this.setupInputs(television));
   }
 
