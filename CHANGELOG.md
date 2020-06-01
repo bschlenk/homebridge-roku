@@ -1,6 +1,29 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [3.0.0](https://github.com/bschlenk/homebridge-roku/compare/v3.0.0-alpha.1...v3.0.0) (2020-06-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* Now requires a minimum of NodeJS v10.17.0
+* Now requires a minimum of homebridge v1.0.0
+* appMap config replaced with inputs
+
+### Features
+
+* add infoButtonOverride config ([67ae14b](https://github.com/bschlenk/homebridge-roku/commit/67ae14b7e058d627635f0012d9b457930ea44cfc))
+* change default volume increment to 1 ([b6a1d1f](https://github.com/bschlenk/homebridge-roku/commit/b6a1d1f952bbc74713a51e015006b9b27e09a9ea))
+* merge config in more logical order ([f5d7f87](https://github.com/bschlenk/homebridge-roku/commit/f5d7f8762a944430e9c093fec09c600fbbfbae1b))
+
+
+### Bug Fixes
+
+* eslint errors ([f8029f4](https://github.com/bschlenk/homebridge-roku/commit/f8029f4b244cc9549942f575a25b66ee28454168))
+* throw helpful error if hap-nodejs can't be imported ([10d413a](https://github.com/bschlenk/homebridge-roku/commit/10d413ade2bf5942d9befef0806deacd6aa67904))
+* use injected hap instead of requiring ([5446afb](https://github.com/bschlenk/homebridge-roku/commit/5446afb8971f4cd4a148a1086f53333f692c60d8))
+* uuid error when isTV is false ([c1c67ca](https://github.com/bschlenk/homebridge-roku/commit/c1c67ca833206671387c6d7fdb9536ff846e0c0f))
 
 <a name="3.0.0-alpha.1"></a>
 # [3.0.0-alpha.1](https://github.com/bschlenk/homebridge-roku/compare/v3.0.0-alpha.0...v3.0.0-alpha.1) (2019-02-13)
