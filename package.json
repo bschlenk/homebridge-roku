@@ -36,7 +36,6 @@
   "homepage": "https://github.com/bschlenk/homebridge-roku#readme",
   "dependencies": {
     "deepmerge": "^4.2.2",
-    "lodash.map": "^4.6.0",
     "roku-client": "^4.0.0"
   },
   "devDependencies": {
