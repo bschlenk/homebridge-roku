@@ -74,6 +74,10 @@ homebridge config for your Roku accessory: `"infoButtonOverride": "HOME"`. The
 list of possible keys can be found
 [here](https://github.com/bschlenk/node-roku-client/blob/master/lib/keys.ts).
 
+### requestTimeout
+
+Wait for this value in milliseconds before considering the device unreachable. The default value is 1000 (1 second).
+
 ## Migrating Major Versions
 
 ### 2.x.x -> 3.x.x
