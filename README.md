@@ -120,6 +120,8 @@ overcome by sending 100 volume down requests before sending X amount of volume
 up requests. I didn't feel like implementing this for obvious reasons, but pull
 requests are welcome :)
 
+Wake-on-LAN is supported, but your device must be connected via Ethernet.
+
 ## TODO
 
 - Possibly fetch apps at homebridge start time or periodically so that the
