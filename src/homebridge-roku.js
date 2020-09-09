@@ -144,7 +144,7 @@ class RokuAccessory {
               error.constructor === pTimeout.TimeoutError &&
               this.doesSupportWakeOnLan()
             ) {
-              if (this.info.ethernetMac && this.info.ethernetMac !== '') {
+              if (this.info.ethernetMac) {
                 // Send wake-on-lan packet
                 await wol.wake(this.info.ethernetMac);
 
