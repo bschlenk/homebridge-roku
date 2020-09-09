@@ -32,6 +32,7 @@ class RokuAccessory {
 
     this.volumeIncrement = config.volumeIncrement || DEFAULT_VOLUME_INCREMENT;
     this.volumeDecrement = config.volumeDecrement || this.volumeIncrement;
+    this.requestTimeout = config.requestTimeout || 1000;
 
     this.muted = false;
 
@@ -113,7 +114,7 @@ class RokuAccessory {
       .getCharacteristic(Characteristic.Active)
       .on('get', async (callback) => {
         try {
-          const info = await pTimeout(this.roku.info(), 1000);
+          const info = await pTimeout(this.roku.info(), this.requestTimeout);
 
           const value =
             info.powerMode === 'PowerOn'
@@ -135,7 +136,7 @@ class RokuAccessory {
       .on('set', async (newValue, callback) => {
         if (newValue === Characteristic.Active.ACTIVE) {
           try {
-            await pTimeout(this.roku.keypress('PowerOn'), 1000);
+            await pTimeout(this.roku.keypress('PowerOn'), this.requestTimeout);
 
             callback(null);
           } catch (error) {
@@ -166,7 +167,7 @@ class RokuAccessory {
       .getCharacteristic(Characteristic.ActiveIdentifier)
       .on('get', async (callback) => {
         try {
-          const app = await pTimeout(this.roku.active(), 1000);
+          const app = await pTimeout(this.roku.active(), this.requestTimeout);
 
           const index =
             app !== null
