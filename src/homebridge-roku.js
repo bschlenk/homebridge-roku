@@ -1,6 +1,8 @@
 'use strict';
 
 const { Client, keys } = require('roku-client');
+const pTimeout = require('p-timeout');
+const wol = require('wol');
 const plugin = require('../package');
 
 let hap;
@@ -30,6 +32,7 @@ class RokuAccessory {
 
     this.volumeIncrement = config.volumeIncrement || DEFAULT_VOLUME_INCREMENT;
     this.volumeDecrement = config.volumeDecrement || this.volumeIncrement;
+    this.requestTimeout = config.requestTimeout || 1000;
 
     this.muted = false;
 
@@ -100,29 +103,58 @@ class RokuAccessory {
     return accessoryInfo;
   }
 
+  doesSupportWakeOnLan() {
+    return this.info.supportsWakeOnWlan === 'true';
+  }
+
   setupTelevision() {
     const television = new Service.Television(this.name);
 
     television
       .getCharacteristic(Characteristic.Active)
-      .on('get', (callback) => {
-        this.roku
-          .info()
-          .then((info) => {
-            const value =
-              info.powerMode === 'PowerOn'
-                ? Characteristic.Active.ACTIVE
-                : Characteristic.Active.INACTIVE;
-            callback(null, value);
-          })
-          .catch(callback);
+      .on('get', async (callback) => {
+        try {
+          const info = await pTimeout(this.roku.info(), this.requestTimeout);
+
+          const value =
+            info.powerMode === 'PowerOn'
+              ? Characteristic.Active.ACTIVE
+              : Characteristic.Active.INACTIVE;
+          callback(null, value);
+        } catch (error) {
+          if (
+            error.constructor === pTimeout.TimeoutError &&
+            this.doesSupportWakeOnLan()
+          ) {
+            callback(null, Characteristic.Active.INACTIVE);
+            return;
+          }
+
+          callback(error);
+        }
       })
-      .on('set', (newValue, callback) => {
+      .on('set', async (newValue, callback) => {
         if (newValue === Characteristic.Active.ACTIVE) {
-          this.roku
-            .keypress('PowerOn')
-            .then(() => callback(null))
-            .catch(callback);
+          try {
+            await pTimeout(this.roku.keypress('PowerOn'), this.requestTimeout);
+
+            callback(null);
+          } catch (error) {
+            if (
+              error.constructor === pTimeout.TimeoutError &&
+              this.doesSupportWakeOnLan()
+            ) {
+              if (this.info.ethernetMac) {
+                // Send wake-on-lan packet
+                await wol.wake(this.info.ethernetMac);
+
+                callback(null);
+                return;
+              }
+            }
+
+            callback(error);
+          }
         } else {
           this.roku
             .keypress('PowerOff')
@@ -133,18 +165,27 @@ class RokuAccessory {
 
     television
       .getCharacteristic(Characteristic.ActiveIdentifier)
-      .on('get', (callback) => {
-        this.roku
-          .active()
-          .then((app) => {
-            const index =
-              app !== null
-                ? this.inputs.findIndex((input) => input.id === app.id)
-                : -1;
-            const hapId = index + 1;
-            callback(null, hapId);
-          })
-          .catch(callback);
+      .on('get', async (callback) => {
+        try {
+          const app = await pTimeout(this.roku.active(), this.requestTimeout);
+
+          const index =
+            app !== null
+              ? this.inputs.findIndex((input) => input.id === app.id)
+              : -1;
+          const hapId = index + 1;
+          callback(null, hapId);
+        } catch (error) {
+          if (
+            error.constructor === pTimeout.TimeoutError &&
+            this.doesSupportWakeOnLan()
+          ) {
+            callback(null, 1);
+            return;
+          }
+
+          callback(error);
+        }
       })
       .on('set', (index, callback) => {
         const rokuId = this.inputs[index - 1].id;
