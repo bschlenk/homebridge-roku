@@ -36,22 +36,22 @@
   "homepage": "https://github.com/bschlenk/homebridge-roku#readme",
   "dependencies": {
     "deepmerge": "^4.2.2",
-    "roku-client": "^4.0.0"
+    "roku-client": "^4.2.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^8.3.5",
-    "@commitlint/config-conventional": "^8.3.4",
-    "@types/jest": "^25.2.3",
-    "eslint": "^7.1.0",
-    "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-config-prettier": "^6.11.0",
-    "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-prettier": "^3.1.3",
-    "hap-nodejs": "^0.7.3",
-    "husky": "^4.2.5",
-    "jest": "^26.0.1",
-    "prettier": "^2.0.5",
-    "standard-version": "^8.0.0"
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
+    "@types/jest": "^26.0.14",
+    "eslint": "^7.10.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "hap-nodejs": "^0.8.2",
+    "husky": "^4.3.0",
+    "jest": "^26.4.2",
+    "prettier": "^2.1.2",
+    "standard-version": "^9.0.0"
   },
   "husky": {
     "hooks": {
