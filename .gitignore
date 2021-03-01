@@ -2,6 +2,8 @@
 /coverage
 /config.json
 /persist
+/dist
+/accessories
 logs
 *.log
 npm-debug.log*

@@ -1,6 +1,6 @@
 'use strict';
 
-const { Client } = require('roku-client');
+// const { Client } = require('roku-client');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -14,17 +14,14 @@ const HOMEBRIDGE_CONFIG = path.join(os.homedir(), '.homebridge', 'config.json');
  * @return {Promise<Object>}
  */
 async function generateConfig() {
-  const client = await Client.discover();
-  const [info, apps] = await Promise.all([client.info(), client.apps()]);
-  const inputs = apps.map((app) => ({ id: app.id, name: app.name }));
+  // const client = await Client.discover();
+  // const [info, apps] = await Promise.all([client.info(), client.apps()]);
+  // const inputs = apps.map((app) => ({ id: app.id, name: app.name }));
   return {
-    accessories: [
+    platforms: [
       {
+        platform: 'RokuPlatform',
         name: 'Roku',
-        accessory: 'Roku',
-        ip: client.ip,
-        inputs,
-        info,
       },
     ],
   };
