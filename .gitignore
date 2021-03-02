@@ -1,9 +1,11 @@
 /node_modules
 /coverage
 /config.json
-/persist
 /dist
-/accessories
+accessories/
+persist/
 logs
 *.log
 npm-debug.log*
+.DS_Store
+

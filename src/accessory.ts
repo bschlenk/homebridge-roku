@@ -1,35 +1,8 @@
-import {
-  Perms,
-  Service,
-  CharacteristicValue,
-  CharacteristicSetCallback,
-  CharacteristicGetCallback,
-  WithUUID,
-} from 'homebridge';
+import { Perms, Service, CharacteristicValue, WithUUID } from 'homebridge';
 import { Keys } from 'roku-client';
 
 import { RokuPlatform } from './platform';
-import { RokuPlatformAccessory } from './types';
-
-const DisplayOrderTypes = {
-  ARRAY_ELEMENT_START: 0x1,
-  ARRAY_ELEMENT_END: 0x0,
-};
-
-const getPromise = (fn: () => Promise<any>) => (
-  cb: CharacteristicGetCallback,
-) =>
-  fn()
-    .then((val) => cb(null, val))
-    .catch(cb);
-
-const setPromise = (fn: (val: CharacteristicValue) => Promise<any>) => (
-  val: CharacteristicValue,
-  cb: CharacteristicSetCallback,
-) =>
-  fn(val)
-    .then(() => cb(null))
-    .catch(cb);
+import { RokuPlatformAccessory, RokuPlatformConfig } from './types';
 
 export class RokuAccessory {
   private buttons: any;
@@ -38,16 +11,16 @@ export class RokuAccessory {
 
   private isMuted = false;
 
-  private volumeIncrement = 1;
-  private volumeDecrement = 1;
-
   constructor(
     private readonly platform: RokuPlatform,
     private readonly accessory: RokuPlatformAccessory,
+    private readonly config: RokuPlatformConfig,
   ) {
     const { Characteristic } = this.platform;
 
-    let infoButton = Keys.INFO;
+    const infoButton = config.infoButtonOverride
+      ? Keys[config.infoButtonOverride] || Keys.INFO
+      : Keys.INFO;
 
     this.buttons = {
       [Characteristic.RemoteKey.REWIND]: Keys.REVERSE,
@@ -70,11 +43,20 @@ export class RokuAccessory {
     this.setupSpeaker();
     this.setupInputs();
 
-    setInterval(() => {
-      this.getPowerStatus().then((status) => {
-        this.television.updateCharacteristic(Characteristic.Active, status);
-      });
-    }, 10000);
+    if (this.config.syncTimeout !== 0) {
+      setInterval(() => {
+        this.getPowerStatus().then((status) => {
+          this.television.updateCharacteristic(Characteristic.Active, status);
+        });
+
+        this.getActiveApp().then((appId) => {
+          this.television.updateCharacteristic(
+            Characteristic.ActiveIdentifier,
+            appId,
+          );
+        });
+      }, this.config.syncTimeout);
+    }
   }
 
   get device() {
@@ -121,13 +103,13 @@ export class RokuAccessory {
 
     television
       .getCharacteristic(Characteristic.Active)
-      .on('get', getPromise(this.getPowerStatus))
-      .on('set', setPromise(this.setPowerStatus));
+      .onGet(this.getPowerStatus)
+      .onSet(this.setPowerStatus);
 
     television
       .getCharacteristic(Characteristic.ActiveIdentifier)
-      .on('get', getPromise(this.getActiveApp))
-      .on('set', setPromise(this.setActiveApp));
+      .onGet(this.getActiveApp)
+      .onSet(this.setActiveApp);
 
     television
       .getCharacteristic(Characteristic.ConfiguredName)
@@ -145,9 +127,7 @@ export class RokuAccessory {
       perms: [Perms.PAIRED_READ],
     });
 
-    television
-      .getCharacteristic(Characteristic.RemoteKey)
-      .on('set', setPromise(this.pressKey));
+    television.getCharacteristic(Characteristic.RemoteKey).onSet(this.pressKey);
   }
 
   setupSpeaker() {
@@ -170,54 +150,43 @@ export class RokuAccessory {
 
     speaker
       .getCharacteristic(Characteristic.Mute)
-      .on('get', (cb: CharacteristicGetCallback) => cb(null, this.isMuted))
-      .on('set', setPromise(this.setMuted));
+      .on('get', (cb) => cb(null, this.isMuted))
+      .onSet(this.setMuted);
 
-    speaker.getCharacteristic(Characteristic.VolumeSelector).on(
-      'set',
-      setPromise((newValue) => {
+    speaker
+      .getCharacteristic(Characteristic.VolumeSelector)
+      .onSet((newValue) => {
         const isUp = newValue === Characteristic.VolumeSelector.INCREMENT;
         const key = isUp ? Keys.VOLUME_UP : Keys.VOLUME_DOWN;
-        const jump = isUp ? this.volumeIncrement : this.volumeDecrement;
+        const jump = isUp
+          ? this.config.volumeIncrement
+          : this.config.volumeDecrement;
 
         return this.device.command().keypress(key, jump).send();
-      }),
-    );
+      });
   }
 
   async setupInputs() {
     const { Characteristic } = this.platform;
-    const hap = this.platform.api.hap;
-    let identifiersTLV = Buffer.alloc(0);
 
     const apps = await this.device.apps();
-    const inputs = apps.map((config, index) => {
-      const hapId = index + 1;
-      const input = this.setupInput(config.id, config.name, hapId);
-
-      if (identifiersTLV.length !== 0) {
-        identifiersTLV = Buffer.concat([
-          identifiersTLV,
-          hap.encode(DisplayOrderTypes.ARRAY_ELEMENT_END, Buffer.alloc(0)),
-        ]);
-      }
-
-      const element = hap.writeUInt32(hapId);
-      identifiersTLV = Buffer.concat([
-        identifiersTLV,
-        hap.encode(DisplayOrderTypes.ARRAY_ELEMENT_START, element),
-      ]);
-
-      return input;
+    apps.unshift({
+      id: 'home',
+      name: 'Home',
+      type: 'menu',
+      version: '1',
     });
 
-    inputs.forEach((input) => {
+    const identifiers = apps.map((config, index) => {
+      const hapId = index + 1;
+      const input = this.setupInput(config.id, config.name, hapId);
       this.television.addLinkedService(input);
+      return hapId;
     });
 
     this.television.setCharacteristic(
       Characteristic.DisplayOrder,
-      identifiersTLV.toString('base64'),
+      this.platform.api.hap.encode(1, identifiers).toString('base64'),
     );
   }
 
@@ -269,16 +238,17 @@ export class RokuAccessory {
   };
 
   getActiveApp = async () => {
-    const apps = await this.device.apps();
+    const apps = await this.getApps();
     const app = await this.device.active();
-    const index = app !== null ? apps.findIndex((a) => a.id === app.id) : -1;
-    const hapId = index + 1;
-    return hapId;
+    if (app === null) return 1;
+    const index = apps.findIndex((a) => a.id === app.id);
+    if (index < 0) return 1;
+    return index + 2;
   };
 
   setActiveApp = async (index: CharacteristicValue) => {
-    const apps = await this.device.apps();
-    const rokuId = apps[(index as number) - 1].id;
+    const apps = await this.getApps();
+    const rokuId = apps[(index as number) - 2].id;
     return this.device.launch(rokuId);
   };
 
@@ -295,10 +265,17 @@ export class RokuAccessory {
         // the TV if the current state is not known
         .volumeDown()
         .volumeUp()
-        .exec((cmd) => (val && cmd.volumeMute()) as any)
+        .exec((cmd) => val && cmd.volumeMute())
         .send()
     );
   };
+
+  async getApps() {
+    const apps = await this.device.apps();
+    return apps.filter(
+      (app) => !(this.config.excludeInputs || []).includes(app.name),
+    );
+  }
 
   getOrAddService<T extends WithUUID<typeof Service>>(
     service: T,

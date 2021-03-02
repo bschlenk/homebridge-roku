@@ -3,13 +3,12 @@ import {
   DynamicPlatformPlugin,
   Logger,
   PlatformAccessory,
-  PlatformConfig,
 } from 'homebridge';
 import { RokuClient } from 'roku-client';
 
 import { PLATFORM_NAME, PLUGIN_NAME } from './settings';
 import { RokuAccessory } from './accessory';
-import { RokuPlatformAccessory } from './types';
+import { RokuPlatformAccessory, RokuPlatformConfig } from './types';
 
 export class RokuPlatform implements DynamicPlatformPlugin {
   public readonly Service = this.api.hap.Service;
@@ -20,10 +19,20 @@ export class RokuPlatform implements DynamicPlatformPlugin {
 
   constructor(
     public readonly log: Logger,
-    public readonly config: PlatformConfig,
+    public readonly config: RokuPlatformConfig,
     public readonly api: API,
   ) {
     this.log.debug('Finished initializing platform:', this.config.name);
+
+    this.log.debug('Got config:', config);
+
+    this.config = {
+      discoverTimeout: 3000,
+      syncTimeout: 600000,
+      volumeIncrement: 1,
+      volumeDecrement: this.config.volumeIncrement || 1,
+      ...this.config,
+    };
 
     // When this event is fired it means Homebridge has restored all cached accessories from disk.
     // Dynamic Platform plugins should only register new accessories after this event was fired,
@@ -49,11 +58,10 @@ export class RokuPlatform implements DynamicPlatformPlugin {
    * must not be registered again to prevent "duplicate UUID" errors.
    */
   async discoverDevices() {
-    // TODO: make this timeout configurable
-    const clients = await RokuClient.discoverAll(3000);
+    const clients = await RokuClient.discoverAll(this.config.discoverTimeout);
 
     // loop over the discovered devices and register each one if it has not already been registered
-    clients.forEach(async (client) => {
+    const promises = clients.map(async (client) => {
       const info = await client.info();
 
       // generate a unique id for the accessory this should be generated from
@@ -75,15 +83,20 @@ export class RokuPlatform implements DynamicPlatformPlugin {
         );
 
         // if you need to update the accessory.context then you should run `api.updatePlatformAccessories`. eg.:
-        // existingAccessory.context.device = device;
+        existingAccessory.context.device = client;
         // this.api.updatePlatformAccessories([existingAccessory]);
 
         // create the accessory handler for the restored accessory
         // this is imported from `platformAccessory.ts`
         // TODO: do I need to update the context here?
-        new RokuAccessory(this, existingAccessory as RokuPlatformAccessory);
+        new RokuAccessory(
+          this,
+          existingAccessory as RokuPlatformAccessory,
+          this.config,
+        );
 
         this.api.updatePlatformAccessories([existingAccessory]);
+        return existingAccessory;
       } else {
         // the accessory does not yet exist, so we need to create it
         this.log.info('Adding new accessory:', info.userDeviceName);
@@ -92,6 +105,7 @@ export class RokuPlatform implements DynamicPlatformPlugin {
         const accessory = new this.api.platformAccessory(
           info.userDeviceName,
           uuid,
+          this.api.hap.Categories.TELEVISION,
         ) as RokuPlatformAccessory;
 
         // store a copy of the device object in the `accessory.context`
@@ -101,13 +115,15 @@ export class RokuPlatform implements DynamicPlatformPlugin {
 
         // create the accessory handler for the newly create accessory
         // this is imported from `platformAccessory.ts`
-        new RokuAccessory(this, accessory);
+        new RokuAccessory(this, accessory, this.config);
 
-        // link the accessory to your platform
-        this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, [
-          accessory,
-        ]);
+        return accessory;
       }
     });
+
+    const accessories = await Promise.all(promises);
+
+    // link the accessory to your platform
+    this.api.publishExternalAccessories(PLUGIN_NAME, accessories);
   }
 }

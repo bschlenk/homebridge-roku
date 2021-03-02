@@ -1,0 +1,88 @@
+{
+  "pluginAlias": "Roku Platform",
+  "pluginType": "platform",
+  "singular": false,
+  "schema": {
+    "type": "object",
+    "properties": {
+      "discoverTimeout": {
+        "title": "Discover Timeout",
+        "description": "The time to wait before assuming all Roku devices have been found. Larger timeouts mean longer startup times, but a better chance all devices will be found.",
+        "type": "number",
+        "minimum": 1000,
+        "placeholder": "3000"
+      },
+      "syncTimeout": {
+        "title": "Sync Timeout",
+        "description": "The time in millis between device status syncs (power status, active app). Set to 0 to turn off syncing.",
+        "type": "number",
+        "minimum": 0,
+        "placeholder": "600000"
+      },
+      "volumeIncrement": {
+        "title": "Volume Increment",
+        "description": "The amount to increment volume by on each change.",
+        "type": "number",
+        "minimum": 1,
+        "placeholder": "1"
+      },
+      "volumeDecrement": {
+        "title": "Volume Decrement",
+        "description": "The amount to decrement volume by on each change. Defaults to the same value as \"volumeIncrement\".",
+        "type": "number",
+        "minimum": 1,
+        "placeholder": "1"
+      },
+      "infoButtonOverride": {
+        "title": "Info Button Override",
+        "description": "Change the behavior of the control center remote \"i\" key.",
+        "type": "string",
+        "placeholder": "HOME",
+        "oneOf": [
+          { "title": "Home", "enum": ["HOME"] },
+          { "title": "Reverse", "enum": ["REVERSE"] },
+          { "title": "Forward", "enum": ["FORWARD"] },
+          { "title": "Play", "enum": ["PLAY"] },
+          { "title": "Select", "enum": ["SELECT"] },
+          { "title": "Left", "enum": ["LEFT"] },
+          { "title": "Right", "enum": ["RIGHT"] },
+          { "title": "Down", "enum": ["DOWN"] },
+          { "title": "Up", "enum": ["UP"] },
+          { "title": "Back", "enum": ["BACK"] },
+          { "title": "InstantReplay", "enum": ["INSTANT_REPLAY"] },
+          { "title": "Info", "enum": ["INFO"] },
+          { "title": "Info", "enum": ["STAR"] },
+          { "title": "Info", "enum": ["OPTIONS"] },
+          { "title": "Backspace", "enum": ["BACKSPACE"] },
+          { "title": "Search", "enum": ["SEARCH"] },
+          { "title": "Enter", "enum": ["ENTER"] },
+          { "title": "FindRemote", "enum": ["FIND_REMOTE"] },
+          { "title": "VolumeDown", "enum": ["VOLUME_DOWN"] },
+          { "title": "VolumeUp", "enum": ["VOLUME_UP"] },
+          { "title": "VolumeMute", "enum": ["VOLUME_MUTE"] },
+          { "title": "ChannelUp", "enum": ["CHANNEL_UP"] },
+          { "title": "ChannelDown", "enum": ["CHANNEL_DOWN"] },
+          { "title": "InputTuner", "enum": ["INPUT_TUNER"] },
+          { "title": "InputHDMI1", "enum": ["INPUT_HDMI1"] },
+          { "title": "InputHDMI2", "enum": ["INPUT_HDMI2"] },
+          { "title": "InputHDMI3", "enum": ["INPUT_HDMI3"] },
+          { "title": "InputHDMI4", "enum": ["INPUT_HDMI4"] },
+          { "title": "InputAV1", "enum": ["INPUT_AV1"] },
+          { "title": "Power", "enum": ["POWER"] },
+          { "title": "PowerOff", "enum": ["POWER_OFF"] },
+          { "title": "PowerOn", "enum": ["POWER_ON"] }
+        ]
+      },
+      "excludeInputs": {
+        "title": "Exclude Inputs",
+        "description": "A list of inputs to exclude from each TV's input selector.",
+        "type": "array",
+        "uniqueItems": true,
+        "items": {
+          "title": "Input Name",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

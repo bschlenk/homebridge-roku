@@ -1,0 +1,20 @@
+{
+  "bridge": {
+    "name": "Homebridge",
+    "username": "CC:22:3D:E3:CE:37",
+    "port": 51826,
+    "pin": "031-45-155"
+  },
+  "description": "Sample Config",
+  "platforms": [
+    {
+      "platform": "RokuPlatform",
+      "name": "Roku",
+      "discoverTimeout": 5000,
+      "volumeIncrement": 5,
+      "volumeDecrement": 1,
+      "infoButtonOverride": "HOME",
+      "excludeInputs": ["HDMI 4 eARC"]
+    }
+  ]
+}

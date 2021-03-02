@@ -1,5 +1,5 @@
-import { PlatformAccessory } from 'homebridge';
-import { RokuClient, RokuDeviceInfo } from 'roku-client';
+import { PlatformAccessory, PlatformConfig } from 'homebridge';
+import { RokuClient, RokuDeviceInfo, Keys } from 'roku-client';
 
 export interface RokuContext {
   device: RokuClient;
@@ -9,3 +9,12 @@ export interface RokuContext {
 export type RokuPlatformAccessory = PlatformAccessory & {
   context: RokuContext;
 };
+
+export interface RokuPlatformConfig extends PlatformConfig {
+  discoverTimeout?: number;
+  syncTimeout?: number;
+  volumeIncrement?: number;
+  volumeDecrement?: number;
+  infoButtonOverride?: keyof typeof Keys;
+  excludeInputs?: string[];
+}
