@@ -1,7 +1,6 @@
 module.exports = {
   extends: [
     'eslint:recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
   ],
@@ -9,24 +8,21 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module',
+    tsconfigRootDir: __dirname,
+    project: ['./tsconfig.json'],
   },
 
   rules: {
-    'max-classes-per-file': 'off',
-    'no-console': 'off',
-    'no-underscore-dangle': 'off',
-    'no-plusplus': 'off',
-    strict: 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
   },
 
   overrides: [
     {
-      files: ['*.test.js'],
+      files: ['*.test.*'],
       env: {
         jest: true,
-      },
-      rules: {
-        'no-new': 'off',
       },
     },
   ],
