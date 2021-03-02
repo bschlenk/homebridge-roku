@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0-beta.2](https://github.com/bschlenk/homebridge-roku/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2021-03-02)
+
+
+### Bug Fixes
+
+* eslint settings ([f3b1d90](https://github.com/bschlenk/homebridge-roku/commit/f3b1d90c2548a34d62a12fd2286e32c24de88b3b))
+
 ## [4.0.0-beta.1](https://github.com/bschlenk/homebridge-roku/compare/v4.0.0-beta.0...v4.0.0-beta.1) (2021-03-02)
 
 
