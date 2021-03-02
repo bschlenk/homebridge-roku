@@ -36,7 +36,7 @@
   "homepage": "https://github.com/bschlenk/homebridge-roku#readme",
   "dependencies": {
     "deepmerge": "^4.2.2",
-    "roku-client": "^4.2.0"
+    "roku-client": "^5.2.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
