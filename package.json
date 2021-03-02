@@ -33,7 +33,6 @@
   },
   "homepage": "https://github.com/bschlenk/homebridge-roku#readme",
   "dependencies": {
-    "deepmerge": "^4.2.2",
     "roku-client": "^5.2.0"
   },
   "devDependencies": {
@@ -41,7 +40,6 @@
     "@commitlint/config-conventional": "^12.0.1",
     "@types/jest": "^26.0.20",
     "eslint": "^7.21.0",
-    "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-prettier": "^3.3.1",
