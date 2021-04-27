@@ -3,6 +3,11 @@
   "version": "4.0.0-beta.3",
   "description": "Control Roku media players through homebridge",
   "main": "dist/index.js",
+  "files": [
+    "dist",
+    "config.schema.json",
+    "!**/__tests__"
+  ],
   "scripts": {
     "lint": "eslint src",
     "test": "npm run lint && jest",
