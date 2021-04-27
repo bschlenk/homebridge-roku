@@ -1,8 +1,15 @@
 import { Perms, Service, CharacteristicValue, WithUUID } from 'homebridge';
-import { Keys } from 'roku-client';
+import { Keys, RokuApp } from 'roku-client';
 
 import { RokuPlatform } from './platform';
 import { RokuPlatformAccessory, RokuPlatformConfig } from './types';
+
+const HOME_APP = {
+  id: 'home',
+  name: 'Home',
+  type: 'menu',
+  version: '1',
+};
 
 export class RokuAccessory {
   private buttons: any;
@@ -97,8 +104,7 @@ export class RokuAccessory {
       Service.Television,
     ));
 
-    // set the service name, this is what is displayed as the default name on the Home app
-    // in this example we are using the name we stored in the `accessory.context` in the `discoverDevices` method.
+    // this is what is displayed as the default name on the Home app
     television.setCharacteristic(Characteristic.Name, this.name);
 
     television
@@ -169,13 +175,7 @@ export class RokuAccessory {
   async setupInputs() {
     const { Characteristic } = this.platform;
 
-    const apps = await this.device.apps();
-    apps.unshift({
-      id: 'home',
-      name: 'Home',
-      type: 'menu',
-      version: '1',
-    });
+    const apps = await this.getApps();
 
     const identifiers = apps.map((config, index) => {
       const hapId = index + 1;
@@ -239,17 +239,16 @@ export class RokuAccessory {
 
   getActiveApp = async () => {
     const apps = await this.getApps();
-    const app = await this.device.active();
-    if (app === null) return 1;
+    const app = await this.activeApp();
     const index = apps.findIndex((a) => a.id === app.id);
-    if (index < 0) return 1;
-    return index + 2;
+    // if the active app was excluded, we report "home" as active
+    return index < 0 ? 1 : index + 1;
   };
 
   setActiveApp = async (index: CharacteristicValue) => {
     const apps = await this.getApps();
-    const rokuId = apps[(index as number) - 2].id;
-    return this.device.launch(rokuId);
+    const app = apps[(index as number) - 1];
+    return this.launchApp(app);
   };
 
   pressKey = (key: CharacteristicValue) => {
@@ -272,9 +271,23 @@ export class RokuAccessory {
 
   async getApps() {
     const apps = await this.device.apps();
-    return apps.filter(
-      (app) => !(this.config.excludeInputs || []).includes(app.name),
-    );
+    apps.unshift(HOME_APP);
+    const excluded = this.config.excludeInputs;
+    if (!excluded) {
+      return apps;
+    }
+    return apps.filter((app) => !excluded.includes(app.name));
+  }
+
+  async activeApp() {
+    const active = await this.device.active();
+    return active || HOME_APP;
+  }
+
+  launchApp(app: RokuApp) {
+    return app.id === 'home'
+      ? this.device.keypress(Keys.HOME)
+      : this.device.launch(app.id);
   }
 
   getOrAddService<T extends WithUUID<typeof Service>>(
