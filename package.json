@@ -1,6 +1,6 @@
 {
   "name": "homebridge-roku",
-  "version": "4.0.0-beta.2",
+  "version": "4.0.0-beta.3",
   "description": "Control Roku media players through homebridge",
   "main": "dist/index.js",
   "scripts": {

@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.0.0-beta.3](https://github.com/bschlenk/homebridge-roku/compare/v4.0.0-beta.2...v4.0.0-beta.3) (2021-04-27)
+
+
+### Bug Fixes
+
+* setting home goes home ([922e6e9](https://github.com/bschlenk/homebridge-roku/commit/922e6e90483108af696baa06c6dc2fcaff839610)), closes [#228](https://github.com/bschlenk/homebridge-roku/issues/228)
+
 ## [4.0.0-beta.2](https://github.com/bschlenk/homebridge-roku/compare/v4.0.0-beta.1...v4.0.0-beta.2) (2021-03-02)
 
 
