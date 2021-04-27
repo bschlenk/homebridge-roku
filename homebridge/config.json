@@ -14,7 +14,7 @@
       "volumeIncrement": 5,
       "volumeDecrement": 1,
       "infoButtonOverride": "HOME",
-      "excludeInputs": ["HDMI 4 eARC"]
+      "excludeInputs": ["HDMI 4 (eARC)", "FandangoNOW Movies & TV"]
     }
   ]
 }
