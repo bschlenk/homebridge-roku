@@ -1,0 +1,30 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: monthly
+    time: "13:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: hap-nodejs
+    versions:
+    - 0.8.5
+  - dependency-name: "@types/jest"
+    versions:
+    - 26.0.19
+  - dependency-name: eslint-plugin-prettier
+    versions:
+    - 3.3.0
+  - dependency-name: "@commitlint/cli"
+    versions:
+    - 11.0.0
+  - dependency-name: "@commitlint/config-conventional"
+    versions:
+    - 11.0.0
+  - dependency-name: node-fetch
+    versions:
+    - 2.6.1
+  - dependency-name: standard-version
+    versions:
+    - 8.0.1
